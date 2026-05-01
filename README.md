@@ -2,8 +2,7 @@
 
 A lightning-fast, client-side tool designed to help University of Colombo School of Computing (UCSC) BIT students practice and grade their past paper MCQs with precision and ease.
 
- 
-*(You should replace this with a screenshot of your finished app!)*
+![tool_usecase](public/answer_sheets/product.png)
 
 ---
 
