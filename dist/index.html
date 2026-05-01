@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DiZToolZ</title>
+    <script type="module" crossorigin src="/DiZToolZ/assets/index-OUIhri0q.js"></script>
+    <link rel="stylesheet" crossorigin href="/DiZToolZ/assets/index-Br1wJ4ZL.css">
+  </head>
+  <body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-8 relative min-h-screen flex flex-col items-center">
+    
+    <header class="mb-6 w-full max-w-7xl flex flex-col items-center border-b pb-6">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-blue-600 tracking-tight">UCSC BIT Tools</h1>
+        <div class="flex items-center justify-center mt-3 gap-3">
+          <h2 class="text-2xl font-semibold">MCQ Cal</h2>
+          <span id="paper-type-badge" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hidden"></span>
+        </div>
+      </div>
+
+      <!-- Builder Link -->
+      <button id="open-builder-btn" class="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 underline flex items-center gap-1 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Build a custom answer sheet
+      </button>
+
+      <!-- Timer Container -->
+      <div id="timer-wrapper" class="hidden mt-6 flex items-center bg-gray-800 text-white p-2 rounded-lg shadow-md">
+        <div id="timer-display-container" class="flex items-center gap-4 px-3">
+          <span id="timer-display" class="text-2xl font-mono font-bold tracking-widest text-blue-400">00:00:00</span>
+          <div class="flex gap-3 border-l border-gray-600 pl-4">
+            <button id="timer-toggle-btn" class="hover:text-blue-400 transition" title="Pause/Play">
+              <svg id="icon-play" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"/></svg>
+              <svg id="icon-pause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg>
+            </button>
+            <button id="timer-reset-btn" class="hover:text-red-400 transition" title="Reset Timer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+        <button id="timer-power-btn" class="ml-2 pl-3 border-l border-gray-600 hover:text-yellow-400 transition" title="Hide/Show Timer">
+          <svg id="icon-eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          <svg id="icon-eye-slash" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="app" class="bg-white p-6 rounded-lg shadow-sm border w-full max-w-7xl flex flex-col items-center">
+      
+      <!-- Top Filters -->
+      <div class="flex flex-wrap justify-center items-center gap-4 mb-8 w-full" id="filters-container">
+        <select id="semester-select" class="border p-2.5 rounded-lg w-full sm:w-48 bg-gray-50 disabled:bg-gray-200 outline-none focus:border-blue-500">
+          <option value="" disabled selected>Select Semester</option>
+          <option value="sem1">Semester 1</option>
+          <option value="sem2">Semester 2</option>
+          <option value="sem3">Semester 3</option>
+          <option value="sem4">Semester 4</option>
+          <option value="sem5">Semester 5</option>
+          <option value="sem6">Semester 6</option>
+          <!-- Task 7: Custom Papers moved to the end -->
+          <option value="custom" class="font-bold text-indigo-600">Custom Papers</option>
+        </select>
+
+        <select id="subject-select" class="border p-2.5 rounded-lg w-full sm:w-64 bg-gray-50 disabled:bg-gray-200 hidden outline-none focus:border-blue-500">
+          <option value="" disabled selected>Select Subject</option>
+        </select>
+
+        <select id="year-select" class="border p-2.5 rounded-lg w-full sm:w-48 bg-gray-50 disabled:bg-gray-200 hidden outline-none focus:border-blue-500">
+          <option value="" disabled selected>Select Year/Name</option>
+        </select>
+
+        <button id="change-paper-btn" class="hidden px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition">
+          Change Paper
+        </button>
+      </div>
+
+      <!-- Layout Wrapper -->
+      <div class="flex flex-col md:flex-row gap-8 w-full justify-center items-start">
+          
+        <!-- Left: Question Grid -->
+        <div class="w-full md:flex-grow flex flex-col items-center">
+          <!-- Task 4: Responsive CSS Columns instead of Flex/Grid for vertical downward flow -->
+          <div id="questions-container" class="hidden w-full pb-4 columns-1 sm:columns-2 lg:columns-4 gap-6"></div>
+          
+          <!-- Comments Box -->
+          <div id="comments-box" class="hidden mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r w-full max-w-3xl">
+            <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Paper Comments:
+            </h4>
+            <pre id="comments-text" class="whitespace-pre-wrap text-sm text-yellow-900 font-sans"></pre>
+          </div>
+        </div>
+        
+        <!-- Right: Action Container -->
+        <div id="action-container" class="hidden w-full md:w-80 flex-shrink-0 md:sticky md:top-6 bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm transition-all duration-500 opacity-0 transform translate-y-4">
+          
+          <button id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-sm transition duration-200">
+            Calculate Score
+          </button>
+          
+          <div id="results-box" class="mt-6 hidden text-center bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Final Grade</h3>
+            
+            <p id="grade-display" class="text-7xl font-black mt-2 drop-shadow-sm"></p>
+            <p class="text-xl text-gray-600 mt-2 font-medium"><span id="score-display"></span> / 100</p>
+            
+            <div class="mt-6 border-t pt-4">
+              <button id="toggle-overview-btn" class="text-sm text-blue-500 hover:text-blue-700 font-semibold underline mb-3">View Marks Breakdown</button>
+              <div id="overview-content" class="hidden text-left bg-gray-50 p-4 rounded-lg border text-sm">
+                 <!-- Task 5: Zero Emojis -->
+                 <p class="mb-2 flex justify-between items-center">
+                   <span class="flex items-center gap-1.5 font-medium text-gray-700">
+                     <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                     Full Marks:
+                   </span>
+                   <span id="stat-full" class="font-bold text-green-600">0</span>
+                 </p>
+                 <p class="mb-2 flex justify-between items-center">
+                   <span class="flex items-center gap-1.5 font-medium text-gray-700">
+                     <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                     Wrong (0):
+                   </span>
+                   <span id="stat-wrong" class="font-bold text-red-600">0</span>
+                 </p>
+                 <div id="stat-partial-container" class="hidden mt-3 border-t pt-3">
+                    <p class="font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                      Partial Marks:
+                    </p>
+                    <ul id="stat-partial-list" class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600 font-mono"></ul>
+                 </div>
+              </div>
+            </div>
+
+            <button id="retest-btn" class="mt-6 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2.5 px-4 rounded-lg transition border border-indigo-200">
+              Retest Paper
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Custom Paper Builder Modal -->
+    <div id="builder-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+        
+        <div class="p-6 border-b bg-gray-50 flex justify-between items-center">
+          <h2 class="text-2xl font-bold text-gray-800">Build Answer Sheet</h2>
+          <button id="close-builder-btn" class="text-gray-400 hover:text-red-500 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <div id="builder-step-1" class="p-6 overflow-y-auto flex-grow">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Paper Name / ID</label>
+              <input type="text" id="build-name" placeholder="e.g. 2026 Mock Exam" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Time (e.g. 2H, 1H)</label>
+              <input type="text" id="build-time" value="2H" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Answer Type</label>
+              <select id="build-type" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
+                <option value="single">Single Answer</option>
+                <option value="multi">Multi Answer</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Question Count</label>
+              <input type="number" id="build-qcount" value="40" min="1" max="100" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
+            </div>
+            <!-- Task 1: Comments field added -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Comments / Notes (Optional)</label>
+              <textarea id="build-comments" rows="2" placeholder="e.g. Students will get free marks for Q17..." class="w-full border p-2.5 rounded outline-none focus:border-indigo-500"></textarea>
+            </div>
+          </div>
+          <button id="builder-next-btn" class="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition">
+            Generate Answer Key Grid
+          </button>
+        </div>
+
+        <div id="builder-step-2" class="hidden p-6 overflow-y-auto flex-grow bg-gray-50">
+          <p class="text-sm text-gray-600 mb-4 font-medium flex items-center gap-2">
+            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            Select the CORRECT answers. You must select at least 1 per question.
+          </p>
+          <!-- Builder grid uses responsive columns too -->
+          <div id="builder-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6 pb-6"></div>
+          <div class="border-t pt-4 mt-2 flex justify-end gap-3">
+            <button id="builder-back-btn" class="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded transition font-medium">Back</button>
+            <button id="builder-save-btn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-bold transition shadow">Save Custom Paper</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Missing Questions Toast -->
+    <div id="toast-popup" class="fixed bottom-6 right-6 bg-orange-100 border-l-4 border-orange-500 text-orange-800 p-4 rounded-lg shadow-2xl transition-transform translate-x-[150%] duration-300 z-50 max-w-sm flex items-start gap-3">
+      <svg class="w-6 h-6 shrink-0 mt-0.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      <div>
+        <h4 class="font-bold text-sm">Incomplete Paper</h4>
+        <p id="toast-message" class="text-xs mt-1 text-orange-700"></p>
+      </div>
+    </div>
+
+  </body>
+</html>

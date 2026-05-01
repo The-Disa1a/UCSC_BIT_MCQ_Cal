@@ -1,0 +1,169 @@
+{
+    "sem1": [
+        {
+            "file": "sem1/it1106.json",
+            "code": "IT1106",
+            "name": "Information Systems"
+        },
+        {
+            "file": "sem1/it1206.json",
+            "code": "IT1206",
+            "name": "Computer Systems"
+        },
+        {
+            "file": "sem1/it1306.json",
+            "code": "IT1306",
+            "name": "FOSS for Personal Computing"
+        },
+        {
+            "file": "sem1/it1406.json",
+            "code": "IT1406",
+            "name": "Introduction to Programming"
+        },
+        {
+            "file": "sem1/it1506.json",
+            "code": "IT1506",
+            "name": "Fundamentals of Mathematics"
+        }
+    ],
+    "sem2": [
+        {
+            "file": "sem2/en2106.json",
+            "code": "EN2106",
+            "name": "Communication Skills I"
+        },
+        {
+            "file": "sem2/it2106.json",
+            "code": "IT2106",
+            "name": "Mathematics for Computing I"
+        },
+        {
+            "file": "sem2/it2206.json",
+            "code": "IT2206",
+            "name": "Fundamentals of Software Engineering"
+        },
+        {
+            "file": "sem2/it2306.json",
+            "code": "IT2306",
+            "name": "Database Systems"
+        },
+        {
+            "file": "sem2/it2406.json",
+            "code": "IT2406",
+            "name": "Web Application Development I"
+        }
+    ],
+    "sem3": [
+        {
+            "file": "sem3/en3106.json",
+            "code": "EN3106",
+            "name": "Communication Skills II"
+        },
+        {
+            "file": "sem3/it3106.json",
+            "code": "IT3106",
+            "name": "Object Oriented Analysis & Design"
+        },
+        {
+            "file": "sem3/it3206.json",
+            "code": "IT3206",
+            "name": "Data Structures and Algorithms"
+        },
+        {
+            "file": "sem3/it3306.json",
+            "code": "IT3306",
+            "name": "Data Management Systems"
+        },
+        {
+            "file": "sem3/it3406.json",
+            "code": "IT3406",
+            "name": "Web Application Development II"
+        }
+    ],
+    "sem4": [
+        {
+            "file": "sem4/it4106.json",
+            "code": "IT4106",
+            "name": "User Experience Design"
+        },
+        {
+            "file": "sem4/it4206.json",
+            "code": "IT4206",
+            "name": "Enterprise Application Development"
+        },
+        {
+            "file": "sem4/it4306.json",
+            "code": "IT4306",
+            "name": "Information Technology Project Management"
+        },
+        {
+            "file": "sem4/it4406.json",
+            "code": "IT4406",
+            "name": "Agile Software Development"
+        },
+        {
+            "file": "sem4/it4506.json",
+            "code": "IT4506",
+            "name": "Computer Networks"
+        }
+    ],
+    "sem5": [
+        {
+            "file": "sem5/en5106.json",
+            "code": "EN5106",
+            "name": "Fundamentals of Management & Entrepreneurship"
+        },
+        {
+            "file": "sem5/it5106.json",
+            "code": "IT5106",
+            "name": "Software Development Project"
+        },
+        {
+            "file": "sem5/it5206.json",
+            "code": "IT5206",
+            "name": "Professional Practice"
+        },
+        {
+            "file": "sem5/it5306.json",
+            "code": "IT5306",
+            "name": "Principles of Information Security"
+        },
+        {
+            "file": "sem5/it5406.json",
+            "code": "IT5406",
+            "name": "Systems & Network Administration"
+        },
+        {
+            "file": "sem5/it5506.json",
+            "code": "IT5506",
+            "name": "Mathematics for Computing II"
+        }
+    ],
+    "sem6": [
+        {
+            "file": "sem6/en6106.json",
+            "code": "EN6106",
+            "name": "Emerging Topics in Information Technology"
+        },
+        {
+            "file": "sem6/it6206.json",
+            "code": "IT6206",
+            "name": "Software Quality Assurance"
+        },
+        {
+            "file": "sem6/it6306.json",
+            "code": "IT6306",
+            "name": "Mobile Application Development"
+        },
+        {
+            "file": "sem6/it6406.json",
+            "code": "IT6406",
+            "name": "Network Security and Audit"
+        },
+        {
+            "file": "sem6/it6506.json",
+            "code": "IT6506",
+            "name": "e-Business Technologies"
+        }
+    ]
+}
