@@ -1,302 +1,138 @@
-<papers>
-    <info>
-        <sem>semester_1</sem>
-        <name>IT1206 Computer Systems</name>
-        <code>IT1206</code>
-        <questionCount>40</questionCount>
-    </info>
-
-    <paper>
-        <pinfo>
-            <year>2020</year>
-            <answerType>multi</answerType>
-        </pinfo>
-        <questions>
-            <question id="1"><answer>c</answer><answer>d</answer></question>
-            <question id="2"><answer>d</answer></question>
-            <question id="3"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="4"><answer>a</answer><answer>c</answer></question>
-            <question id="5"><answer>d</answer></question>
-            <question id="6"><answer>c</answer><answer>e</answer></question>
-            <question id="7"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="8"><answer>b</answer><answer>e</answer></question>
-            <question id="9"><answer>c</answer><answer>d</answer></question>
-            <question id="10"><answer>c</answer><answer>d</answer></question>
-            <question id="11"><answer>c</answer><answer>e</answer></question>
-            <question id="12"><answer>c</answer><answer>e</answer></question>
-            <question id="13"><answer>d</answer><answer>e</answer></question>
-            <question id="14"><answer>c</answer><answer>d</answer><answer>e</answer></question>
-            <question id="15"><answer>a</answer><answer>c</answer><answer>e</answer></question>
-            <question id="16"><answer>a</answer><answer>d</answer></question>
-            <question id="17"><answer>a</answer><answer>d</answer><answer>e</answer></question>
-            <question id="18"><answer>b</answer><answer>d</answer><answer>e</answer></question>
-            <question id="19"><answer>b</answer><answer>d</answer></question>
-            <question id="20"><answer>a</answer><answer>e</answer></question>
-            <question id="21"><answer>a</answer><answer>d</answer></question>
-            <question id="22"><answer>a</answer><answer>d</answer></question>
-            <question id="23"><answer>a</answer><answer>d</answer></question>
-            <question id="24"><answer>b</answer><answer>d</answer></question>
-            <question id="25"><answer>a</answer><answer>d</answer></question>
-            <question id="26"><answer>a</answer><answer>d</answer></question>
-            <question id="27"><answer>b</answer><answer>d</answer></question>
-            <question id="28"><answer>c</answer><answer>d</answer></question>
-            <question id="29"><answer>a</answer><answer>d</answer></question>
-            <question id="30"><answer>c</answer><answer>d</answer></question>
-            <question id="31"><answer>b</answer><answer>d</answer></question>
-            <question id="32"><answer>b</answer><answer>d</answer></question>
-            <question id="33"><answer>c</answer><answer>d</answer></question>
-            <question id="34"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="35"><answer>a</answer><answer>d</answer></question>
-            <question id="36"><answer>b</answer><answer>d</answer></question>
-            <question id="37"><answer>a</answer><answer>d</answer></question>
-            <question id="38"><answer>a</answer><answer>d</answer></question>
-            <question id="39"><answer>b</answer><answer>d</answer></question>
-            <question id="40"><answer>c</answer><answer>e</answer></question>
-        </questions>
-    </paper>
-
-    <paper>
-        <pinfo>
-            <year>2021</year>
-            <answerType>multi</answerType>
-        </pinfo>
-        <questions>
-            <question id="1"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="2"><answer>c</answer><answer>d</answer><answer>e</answer></question>
-            <question id="3"><answer>a</answer><answer>d</answer></question>
-            <question id="4"><answer>b</answer><answer>c</answer></question>
-            <question id="5"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="6"><answer>d</answer></question>
-            <question id="7"><answer>e</answer></question>
-            <question id="8"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="9"><answer>c</answer><answer>d</answer><answer>e</answer></question>
-            <question id="10"><answer>a</answer><answer>b</answer></question>
-            <question id="11"><answer>a</answer><answer>c</answer></question>
-            <question id="12"><answer>d</answer></question>
-            <question id="13"><answer>a</answer><answer>b</answer><answer>d</answer></question>
-            <question id="14"><answer>c</answer><answer>e</answer></question>
-            <question id="15"><answer>b</answer><answer>d</answer></question>
-            <question id="16"><answer>c</answer></question>
-            <question id="17"><answer>d</answer><answer>e</answer></question>
-            <question id="18"><answer>d</answer></question>
-            <question id="19"><answer>a</answer><answer>b</answer><answer>d</answer></question>
-            <question id="20"><answer>a</answer><answer>b</answer></question>
-            <question id="21"><answer>b</answer><answer>c</answer></question>
-            <question id="22"><answer>d</answer></question>
-            <question id="23"><answer>b</answer><answer>c</answer><answer>e</answer></question>
-            <question id="24"><answer>a</answer><answer>d</answer></question>
-            <question id="25"><answer>a</answer><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="26"><answer>c</answer><answer>d</answer><answer>e</answer></question>
-            <question id="27"><answer>b</answer><answer>d</answer></question>
-            <question id="28"><answer>b</answer><answer>c</answer></question>
-            <question id="29"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="30"><answer>b</answer><answer>e</answer></question>
-            <question id="31"><answer>a</answer><answer>c</answer></question>
-            <question id="32"><answer>c</answer><answer>d</answer></question>
-            <question id="33"><answer>d</answer><answer>e</answer></question>
-            <question id="34"><answer>b</answer><answer>c</answer></question>
-            <question id="35"><answer>c</answer></question>
-            <question id="36"><answer>a</answer><answer>e</answer></question>
-            <question id="37"><answer>d</answer></question>
-            <question id="38"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="39"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="40"><answer>a</answer><answer>c</answer><answer>e</answer></question>
-        </questions>
-    </paper>
-
-    <paper>
-        <pinfo>
-            <year>2022</year>
-            <answerType>multi</answerType>
-        </pinfo>
-        <questions>
-            <question id="1"><answer>b</answer><answer>d</answer></question>
-            <question id="2"><answer>a</answer></question>
-            <question id="3"><answer>d</answer></question>
-            <question id="4"><answer>a</answer></question>
-            <question id="5"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="6"><answer>b</answer></question>
-            <question id="7"><answer>c</answer><answer>d</answer></question>
-            <question id="8"><answer>a</answer></question>
-            <question id="9"><answer>a</answer><answer>c</answer><answer>d</answer></question>
-            <question id="10"><answer>b</answer></question>
-            <question id="11"><answer>a</answer></question>
-            <question id="12"><answer>a</answer></question>
-            <question id="13"><answer>a</answer></question>
-            <question id="14"><answer>a</answer><answer>c</answer><answer>d</answer></question>
-            <question id="15"><answer>a</answer></question>
-            <question id="16"><answer>b</answer></question>
-            <question id="17"><answer>a</answer></question>
-            <question id="18"><answer>a</answer></question>
-            <question id="19"><answer>a</answer></question>
-            <question id="20"><answer>a</answer></question>
-            <question id="21"><answer>a</answer></question>
-            <question id="22"><answer>d</answer></question>
-            <question id="23"><answer>a</answer></question>
-            <question id="24"><answer>d</answer></question>
-            <question id="25"><answer>c</answer><answer>d</answer></question>
-            <question id="26"><answer>a</answer></question>
-            <question id="27"><answer>d</answer></question>
-            <question id="28"><answer>d</answer></question>
-            <question id="29"><answer>c</answer></question>
-            <question id="30"><answer>d</answer></question>
-            <question id="31"><answer>b</answer></question>
-            <question id="32"><answer>c</answer></question>
-            <question id="33"><answer>d</answer></question>
-            <question id="34"><answer>b</answer></question>
-            <question id="35"><answer>a</answer><answer>d</answer></question>
-            <question id="36"><answer>d</answer></question>
-            <question id="37"><answer>a</answer></question>
-            <question id="38"><answer>b</answer></question>
-            <question id="39"><answer>d</answer></question>
-            <question id="40"><answer>c</answer></question>
-        </questions>
-    </paper>
-
-    <paper>
-        <pinfo>
-            <year>2023</year>
-            <answerType>multi</answerType>
-        </pinfo>
-        <questions>
-            <question id="1"><answer>a</answer></question>
-            <question id="2"><answer>a</answer><answer>c</answer></question>
-            <question id="3"><answer>a</answer></question>
-            <question id="4"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="5"><answer>a</answer></question>
-            <question id="6"><answer>b</answer><answer>d</answer></question>
-            <question id="7"><answer>a</answer></question>
-            <question id="8"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="9"><answer>b</answer></question>
-            <question id="10"><answer>a</answer></question>
-            <question id="11"><answer>a</answer></question>
-            <question id="12"><answer>c</answer></question>
-            <question id="13"><answer>a</answer></question>
-            <question id="14"><answer>b</answer><answer>d</answer></question>
-            <question id="15"><answer>b</answer><answer>d</answer></question>
-            <question id="16"><answer>c</answer></question>
-            <question id="17"><answer>a</answer><answer>d</answer></question>
-            <question id="18"><answer>a</answer><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="19"><answer>b</answer></question>
-            <question id="20"><answer>b</answer></question>
-            <question id="21"><answer>a</answer><answer>d</answer></question>
-            <question id="22"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="23"><answer>a</answer></question>
-            <question id="24"><answer>b</answer><answer>d</answer></question>
-            <question id="25"><answer>b</answer><answer>d</answer></question>
-            <question id="26"><answer>b</answer><answer>d</answer></question>
-            <question id="27"><answer>c</answer></question>
-            <question id="28"><answer>b</answer><answer>d</answer></question>
-            <question id="29"><answer>b</answer><answer>d</answer></question>
-            <question id="30"><answer>b</answer><answer>d</answer></question>
-            <question id="31"><answer>a</answer><answer>d</answer></question>
-            <question id="32"><answer>b</answer><answer>d</answer></question>
-            <question id="33"><answer>a</answer><answer>d</answer></question>
-            <question id="34"><answer>all</answer></question>
-            <question id="35"><answer>b</answer><answer>d</answer></question>
-            <question id="36"><answer>b</answer><answer>d</answer></question>
-            <question id="37"><answer>b</answer><answer>d</answer></question>
-            <question id="38"><answer>a</answer><answer>d</answer></question>
-            <question id="39"><answer>a</answer><answer>d</answer></question>
-            <question id="40"><answer>b</answer><answer>d</answer></question>
-        </questions>
-    </paper>
-
-    <paper>
-        <pinfo>
-            <year>2024</year>
-            <answerType>multi</answerType>
-        </pinfo>
-        <questions>
-            <question id="1"><answer>a</answer><answer>b</answer></question>
-            <question id="2"><answer>c</answer></question>
-            <question id="3"><answer>c</answer></question>
-            <question id="4"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="5"><answer>b</answer><answer>c</answer></question>
-            <question id="6"><answer>a</answer><answer>c</answer><answer>d</answer></question>
-            <question id="7"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="8"><answer>b</answer></question>
-            <question id="9"><answer>b</answer><answer>c</answer><answer>d</answer></question>
-            <question id="10"><answer>a</answer></question>
-            <question id="11"><answer>c</answer><answer>d</answer></question>
-            <question id="12"><answer>c</answer></question>
-            <question id="13"><answer>c</answer></question>
-            <question id="14"><answer>a</answer><answer>d</answer></question>
-            <question id="15"><answer>a</answer><answer>c</answer></question>
-            <question id="16"><answer>b</answer></question>
-            <question id="17"><answer>a</answer><answer>d</answer></question>
-            <question id="18"><answer>b</answer><answer>d</answer></question>
-            <question id="19"><answer>b</answer></question>
-            <question id="20"><answer>b</answer><answer>c</answer></question>
-            <question id="21"><answer>c</answer></question>
-            <question id="22"><answer>c</answer><answer>d</answer></question>
-            <question id="23"><answer>b</answer><answer>d</answer></question>
-            <question id="24"><answer>b</answer><answer>c</answer></question>
-            <question id="25"><answer>c</answer><answer>d</answer></question>
-            <question id="26"><answer>b</answer><answer>d</answer></question>
-            <question id="27"><answer>c</answer></question>
-            <question id="28"><answer>b</answer></question>
-            <question id="29"><answer>b</answer><answer>d</answer></question>
-            <question id="30"><answer>c</answer></question>
-            <question id="31"><answer>b</answer><answer>d</answer></question>
-            <question id="32"><answer>c</answer><answer>d</answer></question>
-            <question id="33"><answer>b</answer><answer>d</answer></question>
-            <question id="34"><answer>a</answer><answer>d</answer></question>
-            <question id="35"><answer>c</answer><answer>d</answer></question>
-            <question id="36"><answer>b</answer><answer>d</answer></question>
-            <question id="37"><answer>c</answer></question>
-            <question id="38"><answer>b</answer><answer>d</answer></question>
-            <question id="39"><answer>c</answer><answer>d</answer></question>
-            <question id="40"><answer>c</answer><answer>d</answer></question>
-        </questions>
-    </paper>
-
-    <paper>
-        <pinfo>
-            <year>2025</year>
-            <answerType>multi</answerType>
-        </pinfo>
-        <questions>
-            <question id="1"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="2"><answer>c</answer></question>
-            <question id="3"><answer>a</answer><answer>c</answer></question>
-            <question id="4"><answer>c</answer></question>
-            <question id="5"><answer>b</answer></question>
-            <question id="6"><answer>c</answer></question>
-            <question id="7"><answer>b</answer></question>
-            <question id="8"><answer>c</answer></question>
-            <question id="9"><answer>c</answer></question>
-            <question id="10"><answer>d</answer></question>
-            <question id="11"><answer>b</answer><answer>d</answer></question>
-            <question id="12"><answer>c</answer></question>
-            <question id="13"><answer>a</answer><answer>b</answer><answer>c</answer></question>
-            <question id="14"><answer>c</answer></question>
-            <question id="15"><answer>a</answer></question>
-            <question id="16"><answer>b</answer><answer>e</answer></question>
-            <question id="17"><answer>a</answer><answer>c</answer><answer>e</answer></question>
-            <question id="18"><answer>a</answer></question>
-            <question id="19"><answer>c</answer></question>
-            <question id="20"><answer>a</answer><answer>d</answer></question>
-            <question id="21"><answer>b</answer><answer>d</answer></question>
-            <question id="22"><answer>b</answer><answer>d</answer></question>
-            <question id="23"><answer>b</answer><answer>d</answer></question>
-            <question id="24"><answer>c</answer></question>
-            <question id="25"><answer>a</answer><answer>d</answer></question>
-            <question id="26"><answer>a</answer></question>
-            <question id="27"><answer>c</answer></question>
-            <question id="28"><answer>d</answer></question>
-            <question id="29"><answer>b</answer></question>
-            <question id="30"><answer>d</answer></question>
-            <question id="31"><answer>c</answer></question>
-            <question id="32"><answer>b</answer></question>
-            <question id="33"><answer>d</answer></question>
-            <question id="34"><answer>b</answer><answer>e</answer></question>
-            <question id="35"><answer>a</answer></question>
-            <question id="36"><answer>c</answer></question>
-            <question id="37"><answer>e</answer></question>
-            <question id="38"><answer>d</answer></question>
-            <question id="39"><answer>b</answer></question>
-            <question id="40"><answer>a</answer><answer>b</answer><answer>c</answer><answer>d</answer></question>
-        </questions>
-    </paper>
-</papers>
+{
+    "2024": {
+        "total_marks": 50,
+        "comments": "",
+        "time": "1H",
+        "answerType": "single",
+        "qcount": 25,
+        "questions": {
+             "1": ["c"],
+             "2": ["e"],
+             "3": ["a"],
+             "4": ["c"],
+             "5": ["c"],
+             "6": ["a"],
+             "7": ["b"],
+             "8": ["e"],
+             "9": ["a"],
+            "10": ["b"],
+            "11": ["d"],
+            "12": ["c"],
+            "13": ["b"],
+            "14": ["a"],
+            "15": ["d"],
+            "16": ["b"],
+            "17": ["c"],
+            "18": ["e"],
+            "19": ["b"],
+            "20": ["d"],
+            "21": ["a"],
+            "22": ["e"],
+            "23": ["b"],
+            "24": ["b"],
+            "25": ["a"]
+        }
+    },
+    "2023": {
+        "total_marks": 50,
+        "comments": "",
+        "time": "1H",
+        "answerType": "multi",
+        "qcount": 25,
+        "questions": {
+             "1": ["c"],
+             "2": ["d"],
+             "3": ["a"],
+             "4": ["c"],
+             "5": ["a"],
+             "6": ["all"],
+             "7": ["e"],
+             "8": ["b"],
+             "9": ["c"],
+            "10": ["a"],
+            "11": ["d"],
+            "12": ["b"],
+            "13": ["a"],
+            "14": ["c"],
+            "15": ["a"],
+            "16": ["a"],
+            "17": ["c"],
+            "18": ["c"],
+            "19": ["e"],
+            "20": ["d"],
+            "21": ["a"],
+            "22": ["b"],
+            "23": ["c"],
+            "24": ["d"],
+            "25": ["b"]
+        }
+    },
+    "2022": {
+        "total_marks": 50,
+        "comments": "",
+        "time": "1H",
+        "answerType": "multi",
+        "qcount": 25,
+        "questions": {
+             "1": ["a"],
+             "2": ["d"],
+             "3": ["b"],
+             "4": ["c"],
+             "5": ["d"],
+             "6": ["b"],
+             "7": ["b"],
+             "8": ["e"],
+             "9": ["d"],
+            "10": ["d"],
+            "11": ["a"],
+            "12": ["a"],
+            "13": ["e"],
+            "14": ["b"],
+            "15": ["c"],
+            "16": ["a"],
+            "17": ["d"],
+            "18": ["b"],
+            "19": ["a"],
+            "20": ["c"],
+            "21": ["e"],
+            "22": ["b"],
+            "23": ["a"],
+            "24": ["e"],
+            "25": ["a"]
+        }
+    },
+    "2021": {
+        "total_marks": 50,
+        "comments": "",
+        "time": "1H",
+        "answerType": "multi",
+        "qcount": 25,
+        "questions": {
+             "1": ["a", "b", "d"],
+             "2": ["c"],
+             "3": ["d"],
+             "4": ["b","c"],
+             "5": ["a", "c"],
+             "6": ["e"],
+             "7": ["c","d", "e"],
+             "8": ["a", "d", "e"],
+             "9": ["c"],
+            "10": ["a"],
+            "11": ["e"],
+            "12": ["a", "c", "d", "e"],
+            "13": ["b"],
+            "14": ["b"],
+            "15": ["d"],
+            "16": ["a", "c"],
+            "17": ["d"],
+            "18": ["a", "d", "e"],
+            "19": ["c", "d"],
+            "20": ["e"],
+            "21": ["d"],
+            "22": ["b"],
+            "23": ["d"],
+            "24": ["d"],
+            "25": ["b", "c"]
+        }
+    }
+}

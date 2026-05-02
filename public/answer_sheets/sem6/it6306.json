@@ -1,0 +1,11 @@
+{
+    "Updating...": {
+        "total_marks": 50,
+        "comments" : "* Answer key will be added soon. You can contribute by JSON format. \n* Repo : https://github.com/The-Disa1a/UCSC_BIT_MCQ_Cal \n* Clone it and build answer_sheets using public/template.json and make a PR. \n* Or just use 'Build a custom answer sheet' option until we add the answer key.", 
+        "time" : "1H", 
+        "answerType": "multi", 
+        "qcount": 25,
+        "questions": {
+        }
+    }
+}
