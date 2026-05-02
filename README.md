@@ -1,4 +1,4 @@
-# DiZToolZ - UCSC BIT MCQ Calculator
+# UCSC BIT MCQ Calculator
 
 A lightning-fast, client-side tool designed to help University of Colombo School of Computing (UCSC) BIT students practice and grade their past paper MCQs with precision and ease.
 
@@ -10,7 +10,7 @@ A lightning-fast, client-side tool designed to help University of Colombo School
 
 Studying for UCSC BIT exams involves a lot of past paper practice. However, manually calculating scores, especially for multi-answer questions with negative marking, is tedious, time-consuming, and error-prone. 
 
-**DiZToolZ** solves this problem by providing an interactive, beautiful interface to:
+**UCSC_BIT_MCQ_Cal** solves this problem by providing an interactive, beautiful interface to:
 -  Instantly grade your performance on official past papers.
 -  Simulate exam conditions with a built-in timer.
 -  Create and save your own custom answer sheets for mock exams or study sessions.
@@ -39,7 +39,7 @@ Because the entire application runs in your browser (client-side), it's incredib
 
 This tool is purpose-built to address the specific challenges faced by UCSC BIT undergraduates:
 
-1.  **Master the Marking Scheme:** Stop guessing how negative marks are calculated. DiZToolZ shows you exactly how selecting one wrong answer can impact your score on a multi-answer question, helping you build better exam strategies.
+1.  **Master the Marking Scheme:** Stop guessing how negative marks are calculated. UCSC_BIT_MCQ_Cal shows you exactly how selecting one wrong answer can impact your score on a multi-answer question, helping you build better exam strategies.
 
 2.  **Efficient Practice:** Grade an entire 40-question paper in a single click instead of spending 15 minutes manually checking and calculating. This frees up valuable study time.
 
@@ -69,15 +69,17 @@ If you have a new answer sheet or find a correction, you can add it by following
 2.  **Locate the JSON files** in the `public/` directory (e.g., `public/sem1/it1106.json`).
 3.  **Update or Add a new year entry.** The JSON structure is simple:
     ```json
-    "2026": {
-        "time" : "2H",
-        "answerType": "single", // or "multi"
-        "qcount": 40,
-        "comments" : "Any official comments or changes go here.",
-        "questions": {
-            "1": ["c"],
-            "2": ["a", "d"], // Multi-answers or single with multiple correct keys
-            ...
+    {
+        "2020": { #year of the exam
+            "total_marks": 100, #any number , defualt is 100
+            "comments" : "", #notes in the papers. 
+            "time" : "2H", #options 1H | 2H | ...
+            "answerType": "multi", #options single | multi
+            "qcount": 40, #options 20 | 25 | 40 | ....
+            "questions": {
+                "1": ["b"],...
+                "40": ["a", "c", "d", "e"]
+            }
         }
     }
     ```
