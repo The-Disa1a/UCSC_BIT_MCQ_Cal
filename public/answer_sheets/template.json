@@ -1,80 +1,13 @@
 {
-    "2020": {
-        "comments" : "",
-        "time" : "2H",
-        "answerType": "multi",
-        "qcount": 40,
+    "2020": { #year of the exam
+        "total_marks": 100, #any number , defualt is 100
+        "comments" : "", #notes in the papers. 
+        "time" : "2H", #options 1H | 2H | ...
+        "answerType": "multi", #options single | multi
+        "qcount": 40, #options 20 | 25 | 40 | ....
         "questions": {
-            "1": ["b"],
-            ........
-            "39": ["c"],
+            "1": ["b"],...
             "40": ["a", "c", "d", "e"]
-        }
-    },
-
-    "2021": {
-        "comments" : "",
-        "time" : "2H",
-        "answerType": "multi",
-        "qcount": 40,
-        "questions": {
-            "1": ["a", "d"],
-            "5": ["all"],
-            .........
-            "38": ["a", "b"],
-            "39": ["a", "d"],
-            "40": ["a", "c", "d", "e"]
-        }
-    },
-
-    "2022": {
-        "comments" : "",
-        "time" : "2H",
-        "answerType": "multi",
-        "qcount": 40,
-        "questions": {
-            "1": ["c"],
-            .........
-            "38": ["a", "c", "d", "e"],
-            "39": ["b", "c", "e"],
-            "40": ["b", "d"]
-        }
-    },
-
-    "2023": {
-        "comments" : "",
-        "time" : "2H",
-        "answerType": "single",
-        "qcount": 40,
-        "questions": {
-            "1": ["c"],
-            ...........
-            "40": ["d"]
-        }
-    },
-
-    "2024": {
-        "comments" : "",
-        "time" : "2H",
-        "answerType": "single",
-        "qcount": 40,
-        "questions": {
-            "1": ["c"],
-            .............
-            "40": ["c"]
-        }
-    },
-
-    "2025": {
-        "comments" : "",
-        "time" : "2H",
-        "answerType": "single",
-        "qcount": 40,
-        "questions": {
-            "1": ["c"],
-            ..........
-            "40": ["b"]
         }
     }
-
 }
