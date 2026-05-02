@@ -3,21 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DiZToolZ</title>
+    <title>UCSC BIT MCQ Calculator</title>
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-8 relative min-h-screen flex flex-col items-center">
     
     <header class="mb-6 w-full max-w-7xl flex flex-col items-center border-b pb-6">
-      <div class="text-center">
-        <h1 class="text-4xl font-bold text-blue-600 tracking-tight">UCSC BIT Tools</h1>
-        <div class="flex items-center justify-center mt-3 gap-3">
-          <h2 class="text-2xl font-semibold">MCQ Cal</h2>
-          <span id="paper-type-badge" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hidden"></span>
+      <div class="text-center flex flex-col items-center">
+        <!-- Task 2: Rebranding -->
+        <h1 class="text-4xl font-bold text-blue-600 tracking-tight">UCSC BIT MCQ Calculator</h1>
+        <div class="mt-3">
+          <span id="paper-type-badge" class="px-4 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hidden"></span>
         </div>
       </div>
 
-      <!-- Builder Link -->
       <button id="open-builder-btn" class="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 underline flex items-center gap-1 transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         Build a custom answer sheet
@@ -56,7 +55,6 @@
           <option value="sem4">Semester 4</option>
           <option value="sem5">Semester 5</option>
           <option value="sem6">Semester 6</option>
-          <!-- Task 7: Custom Papers moved to the end -->
           <option value="custom" class="font-bold text-indigo-600">Custom Papers</option>
         </select>
 
@@ -78,7 +76,6 @@
           
         <!-- Left: Question Grid -->
         <div class="w-full md:flex-grow flex flex-col items-center">
-          <!-- Task 4: Responsive CSS Columns instead of Flex/Grid for vertical downward flow -->
           <div id="questions-container" class="hidden w-full pb-4 columns-1 sm:columns-2 lg:columns-4 gap-6"></div>
           
           <!-- Comments Box -->
@@ -101,13 +98,12 @@
           <div id="results-box" class="mt-6 hidden text-center bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
             <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Final Grade</h3>
             
-            <p id="grade-display" class="text-7xl font-black mt-2 drop-shadow-sm"></p>
-            <p class="text-xl text-gray-600 mt-2 font-medium"><span id="score-display"></span> / 100</p>
+            <p id="grade-display" class="hidden text-7xl font-black mt-2 drop-shadow-sm"></p>
+            <p id="score-container" class="text-xl text-gray-600 mt-2 font-medium"><span id="score-display"></span></p>
             
             <div class="mt-6 border-t pt-4">
               <button id="toggle-overview-btn" class="text-sm text-blue-500 hover:text-blue-700 font-semibold underline mb-3">View Marks Breakdown</button>
               <div id="overview-content" class="hidden text-left bg-gray-50 p-4 rounded-lg border text-sm">
-                 <!-- Task 5: Zero Emojis -->
                  <p class="mb-2 flex justify-between items-center">
                    <span class="flex items-center gap-1.5 font-medium text-gray-700">
                      <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -152,8 +148,8 @@
         </div>
 
         <div id="builder-step-1" class="p-6 overflow-y-auto flex-grow">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="md:col-span-2 lg:col-span-1">
               <label class="block text-sm font-semibold text-gray-700 mb-1">Paper Name / ID</label>
               <input type="text" id="build-name" placeholder="e.g. 2026 Mock Exam" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
             </div>
@@ -172,8 +168,12 @@
               <label class="block text-sm font-semibold text-gray-700 mb-1">Question Count</label>
               <input type="number" id="build-qcount" value="40" min="1" max="100" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
             </div>
-            <!-- Task 1: Comments field added -->
-            <div class="md:col-span-2">
+            <!-- Task 1.5: Total Marks Field added -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Total Marks</label>
+              <input type="number" id="build-total-marks" value="100" min="1" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
+            </div>
+            <div class="md:col-span-2 lg:col-span-3">
               <label class="block text-sm font-semibold text-gray-700 mb-1">Comments / Notes (Optional)</label>
               <textarea id="build-comments" rows="2" placeholder="e.g. Students will get free marks for Q17..." class="w-full border p-2.5 rounded outline-none focus:border-indigo-500"></textarea>
             </div>
@@ -188,7 +188,6 @@
             <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
             Select the CORRECT answers. You must select at least 1 per question.
           </p>
-          <!-- Builder grid uses responsive columns too -->
           <div id="builder-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6 pb-6"></div>
           <div class="border-t pt-4 mt-2 flex justify-end gap-3">
             <button id="builder-back-btn" class="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded transition font-medium">Back</button>

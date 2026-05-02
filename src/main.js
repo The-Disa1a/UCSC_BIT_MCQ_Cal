@@ -10,6 +10,7 @@ const actionContainer = document.getElementById("action-container");
 const submitBtn = document.getElementById("submit-btn");
 const resultsBox = document.getElementById("results-box");
 const gradeDisplay = document.getElementById("grade-display");
+const scoreContainer = document.getElementById("score-container");
 const scoreDisplay = document.getElementById("score-display");
 const retestBtn = document.getElementById("retest-btn");
 const changePaperBtn = document.getElementById("change-paper-btn");
@@ -188,8 +189,11 @@ async function init() {
     allInputs.forEach(inp => inp.disabled = true);
     submitBtn.classList.add("hidden");
 
-    const Q_MAX = 100 / totalQuestions; 
+    // Task 1.4: Dynamic Total Marks Formula
+    const totalMarks = parseFloat(yearData.total_marks) || 100;
+    const Q_MAX = totalMarks / totalQuestions; 
     let totalScore = 0;
+    
     let fullCount = 0, wrongCount = 0, partialBreakdown =[];
 
     for (let i = 1; i <= totalQuestions; i++) {
@@ -205,17 +209,47 @@ async function init() {
       let qScore = 0;
       let isPerfect = false;
       
-      let actualCorrect = correctAns;
-      if (correctAns.length === 1 && correctAns[0] === 'all') {
-          actualCorrect =['a', 'b', 'c', 'd', 'e'];
+      let actualCorrect = [...correctAns];
+      
+      // Flags for special rules
+      const isFree = actualCorrect.includes("free");
+      const isOnlyOne = actualCorrect.includes("only_one");
+      const isAnyCombo = actualCorrect.includes("any_combo");
+      
+      if (isOnlyOne) actualCorrect = actualCorrect.filter(x => x !== 'only_one');
+      if (isAnyCombo) actualCorrect = actualCorrect.filter(x => x !== 'any_combo');
+      if (actualCorrect.length === 1 && actualCorrect[0] === 'all') {
+          actualCorrect = ['a', 'b', 'c', 'd', 'e'];
       }
 
-      if (!isMultiGlobal) {
+      // Advanced Scoring Logic Branches
+      if (isFree) {
+          // Task 1.2: Free marks if selected ANY answer
+          if (userAnswers.length > 0) {
+              qScore = Q_MAX;
+              isPerfect = true;
+          }
+      } else if (isOnlyOne) {
+          // Task 1.1: Only one specific correct answer allowed
+          if (userAnswers.length === 1 && actualCorrect.includes(userAnswers[0])) {
+              qScore = Q_MAX;
+              isPerfect = true;
+          }
+      } else if (isAnyCombo) {
+          // Task 1.3: Any subset combination of correct answers
+          const isSubset = userAnswers.every(ans => actualCorrect.includes(ans));
+          if (userAnswers.length > 0 && isSubset) {
+              qScore = Q_MAX;
+              isPerfect = true;
+          }
+      } else if (!isMultiGlobal) {
+        // Normal Single Answer
         if (userAnswers.length === 1 && actualCorrect.includes(userAnswers[0])) {
             qScore = Q_MAX;
             isPerfect = true;
         }
       } else {
+        // Normal Multi Answer Negative Marking
         const X = actualCorrect.length; 
         const numWrongOptions = 5 - X; 
         let Y = 0, Z = 0;
@@ -239,8 +273,10 @@ async function init() {
       else if (qScore === 0) wrongCount++;
       else partialBreakdown.push({ q: i, score: qScore });
 
-      // Apply row highlight for perfect answers
-      if (isPerfect) {
+      // Apply row highlights
+      if (isFree && isPerfect) {
+          qDiv.classList.add('bg-blue-50', 'rounded-lg', 'border', 'border-blue-200');
+      } else if (isPerfect) {
           qDiv.classList.add('bg-green-50', 'rounded-lg', 'border', 'border-green-200');
       } 
       
@@ -250,33 +286,47 @@ async function init() {
           const label = inp.parentElement;
           const spanText = label.querySelector("span");
 
-          if (userAnswers.includes(val)) {
-              // Examinee selected this option
-              if (actualCorrect.includes(val)) {
-                  // Selected & Correct -> Solid Green
-                  label.classList.replace('border-gray-400', 'border-green-500');
-                  spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-white bg-green-500 transition-all";
-              } else {
-                  // Selected & Wrong -> Solid Red
-                  label.classList.replace('border-gray-400', 'border-red-500');
-                  spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-white bg-red-500 transition-all";
+          if (isFree) {
+              // Free Mark UI - Color selected bubbles blue
+              if (userAnswers.includes(val)) {
+                  label.classList.replace('border-gray-400', 'border-blue-500');
+                  spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-white bg-blue-500 transition-all";
               }
-          } else if (actualCorrect.includes(val)) {
-              // Examinee MISSED this option, but it is a correct answer
-              // -> Green Border & Green Text only (No solid fill!)
-              label.classList.replace('border-gray-400', 'border-green-500');
-              spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-green-600 bg-transparent transition-all";
+          } else {
+              // Normal Grading UI
+              if (userAnswers.includes(val)) {
+                  if (actualCorrect.includes(val)) {
+                      label.classList.replace('border-gray-400', 'border-green-500');
+                      spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-white bg-green-500 transition-all";
+                  } else {
+                      label.classList.replace('border-gray-400', 'border-red-500');
+                      spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-white bg-red-500 transition-all";
+                  }
+              } else if (actualCorrect.includes(val)) {
+                  label.classList.replace('border-gray-400', 'border-green-500');
+                  spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-green-600 bg-transparent transition-all";
+              }
           }
       });
       
     }
 
     const finalRoundedScore = parseFloat(totalScore.toFixed(2));
-    const gradeInfo = getGradeInfo(finalRoundedScore);
-
-    gradeDisplay.textContent = gradeInfo.letter;
-    gradeDisplay.className = `text-7xl font-black mt-2 drop-shadow-sm ${gradeInfo.color}`;
-    scoreDisplay.textContent = finalRoundedScore;
+    
+    // Task 1.5: Dynamic display based on totalMarks
+    if (totalMarks === 100) {
+        const gradeInfo = getGradeInfo(finalRoundedScore);
+        gradeDisplay.classList.remove("hidden");
+        gradeDisplay.textContent = gradeInfo.letter;
+        gradeDisplay.className = `text-7xl font-black mt-2 drop-shadow-sm ${gradeInfo.color}`;
+        
+        scoreDisplay.textContent = `${finalRoundedScore}%`;
+        scoreContainer.className = "text-xl text-gray-600 mt-2 font-medium";
+    } else {
+        gradeDisplay.classList.add("hidden");
+        scoreDisplay.textContent = `${finalRoundedScore} / ${totalMarks}`;
+        scoreContainer.className = "text-5xl font-black text-blue-600 mt-4";
+    }
     
     statFull.textContent = fullCount;
     statWrong.textContent = wrongCount;
@@ -390,6 +440,7 @@ function setupBuilder() {
         const time = document.getElementById("build-time").value || "2H";
         const type = document.getElementById("build-type").value;
         const qCount = parseInt(document.getElementById("build-qcount").value);
+        const totalMarks = parseFloat(document.getElementById("build-total-marks").value) || 100;
         const comments = document.getElementById("build-comments").value.trim();
         
         let questionsObj = {};
@@ -408,6 +459,7 @@ function setupBuilder() {
             time: time,
             answerType: type,
             qcount: qCount,
+            total_marks: totalMarks,
             questions: questionsObj
         };
 
