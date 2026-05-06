@@ -19,6 +19,12 @@ const commentsText = document.getElementById("comments-text");
 const toastPopup = document.getElementById("toast-popup");
 const toastMessage = document.getElementById("toast-message");
 
+// Focus Mode DOM Elements
+const focusToggleBtn = document.getElementById("focus-toggle-btn");
+const headerMain = document.getElementById("header-main");
+const filtersContainer = document.getElementById("filters-container");
+const appMain = document.getElementById("app");
+
 // Timer DOM Elements
 const timerWrapper = document.getElementById("timer-wrapper");
 const timerDisplay = document.getElementById("timer-display");
@@ -56,6 +62,8 @@ let currentPaperData = null;
 let isMultiGlobal = false;
 let paperActive = false; 
 let toastTimeout = null;
+let isEnhancementCourse = false;
+let isFocusMode = false;
 
 // Timer State
 let timerMaxSeconds = 0;
@@ -117,6 +125,12 @@ async function init() {
           startTimer();
           hasTimerStartedOnce = true;
       }
+
+      // Task 1: Auto Focus Mode ONLY on mobile screens (< 768px)
+      if (window.innerWidth < 768 && !isFocusMode) {
+          toggleFocusMode();
+          focusToggleBtn.classList.remove("hidden");
+      }
     }
   });
 
@@ -139,6 +153,9 @@ async function init() {
     yearSelect.value = ""; 
     stopTimer();
     timerWrapper.classList.add("hidden");
+
+    if (isFocusMode) toggleFocusMode();
+    focusToggleBtn.classList.add("hidden");
   });
 
   retestBtn.addEventListener("click", () => {
@@ -151,6 +168,12 @@ async function init() {
     
     resetTimer();
     hasTimerStartedOnce = false; 
+
+    // Auto focus again if retesting on mobile
+    if (window.innerWidth < 768 && !isFocusMode) {
+        toggleFocusMode();
+        focusToggleBtn.classList.remove("hidden");
+    }
   });
 
   toggleOverviewBtn.addEventListener("click", () => {
@@ -171,7 +194,12 @@ async function init() {
     iconEyeSlash.classList.toggle("hidden");
   });
 
+  focusToggleBtn.addEventListener("click", toggleFocusMode);
+
   submitBtn.addEventListener("click", () => {
+    if (isFocusMode) toggleFocusMode();
+    focusToggleBtn.classList.add("hidden");
+
     const selectedYear = yearSelect.value;
     const yearData = currentPaperData[selectedYear];
     const correctAnswers = yearData.questions;
@@ -189,7 +217,6 @@ async function init() {
     allInputs.forEach(inp => inp.disabled = true);
     submitBtn.classList.add("hidden");
 
-    // Task 1.4: Dynamic Total Marks Formula
     const totalMarks = parseFloat(yearData.total_marks) || 100;
     const Q_MAX = totalMarks / totalQuestions; 
     let totalScore = 0;
@@ -202,16 +229,22 @@ async function init() {
       
       const checkedInputs = document.querySelectorAll(`input[name="q${i}"]:checked`);
       let userAnswers = Array.from(checkedInputs).map(inp => inp.value);
-      let correctAns = correctAnswers[i.toString()];
+      
+      let correctAns = null;
+      for (let key in correctAnswers) {
+          if (parseInt(key, 10) === i) {
+              correctAns = correctAnswers[key];
+              break;
+          }
+      }
 
       if (!correctAns) continue; 
 
       let qScore = 0;
       let isPerfect = false;
       
-      let actualCorrect = [...correctAns];
+      let actualCorrect =[...correctAns];
       
-      // Flags for special rules
       const isFree = actualCorrect.includes("free");
       const isOnlyOne = actualCorrect.includes("only_one");
       const isAnyCombo = actualCorrect.includes("any_combo");
@@ -219,37 +252,31 @@ async function init() {
       if (isOnlyOne) actualCorrect = actualCorrect.filter(x => x !== 'only_one');
       if (isAnyCombo) actualCorrect = actualCorrect.filter(x => x !== 'any_combo');
       if (actualCorrect.length === 1 && actualCorrect[0] === 'all') {
-          actualCorrect = ['a', 'b', 'c', 'd', 'e'];
+          actualCorrect =['a', 'b', 'c', 'd', 'e'];
       }
 
-      // Advanced Scoring Logic Branches
       if (isFree) {
-          // Task 1.2: Free marks if selected ANY answer
           if (userAnswers.length > 0) {
               qScore = Q_MAX;
               isPerfect = true;
           }
       } else if (isOnlyOne) {
-          // Task 1.1: Only one specific correct answer allowed
           if (userAnswers.length === 1 && actualCorrect.includes(userAnswers[0])) {
               qScore = Q_MAX;
               isPerfect = true;
           }
       } else if (isAnyCombo) {
-          // Task 1.3: Any subset combination of correct answers
           const isSubset = userAnswers.every(ans => actualCorrect.includes(ans));
           if (userAnswers.length > 0 && isSubset) {
               qScore = Q_MAX;
               isPerfect = true;
           }
       } else if (!isMultiGlobal) {
-        // Normal Single Answer
         if (userAnswers.length === 1 && actualCorrect.includes(userAnswers[0])) {
             qScore = Q_MAX;
             isPerfect = true;
         }
       } else {
-        // Normal Multi Answer Negative Marking
         const X = actualCorrect.length; 
         const numWrongOptions = 5 - X; 
         let Y = 0, Z = 0;
@@ -273,7 +300,6 @@ async function init() {
       else if (qScore === 0) wrongCount++;
       else partialBreakdown.push({ q: i, score: qScore });
 
-      // Apply row highlights
       if (isFree && isPerfect) {
           qDiv.classList.add('bg-blue-50', 'rounded-lg', 'border', 'border-blue-200');
       } else if (isPerfect) {
@@ -287,13 +313,11 @@ async function init() {
           const spanText = label.querySelector("span");
 
           if (isFree) {
-              // Free Mark UI - Color selected bubbles blue
               if (userAnswers.includes(val)) {
                   label.classList.replace('border-gray-400', 'border-blue-500');
                   spanText.className = "absolute inset-0 flex items-center justify-center rounded-full text-xs font-bold text-white bg-blue-500 transition-all";
               }
           } else {
-              // Normal Grading UI
               if (userAnswers.includes(val)) {
                   if (actualCorrect.includes(val)) {
                       label.classList.replace('border-gray-400', 'border-green-500');
@@ -313,7 +337,6 @@ async function init() {
 
     const finalRoundedScore = parseFloat(totalScore.toFixed(2));
     
-    // Task 1.5: Dynamic display based on totalMarks
     if (totalMarks === 100) {
         const gradeInfo = getGradeInfo(finalRoundedScore);
         gradeDisplay.classList.remove("hidden");
@@ -355,6 +378,46 @@ async function init() {
   setupBuilder();
 }
 
+function toggleFocusMode() {
+    isFocusMode = !isFocusMode;
+    if (isFocusMode) {
+        headerMain.classList.add("hidden");
+        filtersContainer.classList.add("hidden");
+        appMain.classList.replace("p-6", "p-2");
+        questionsContainer.classList.replace("gap-6", "gap-2");
+        actionContainer.classList.replace("p-6", "p-3");
+        
+        // Task 1.1: Force 2-columns on mobile during Focus Mode to perfectly compact the UI
+        questionsContainer.classList.replace("columns-1", "columns-2");
+        
+        document.querySelectorAll('.q-row').forEach(row => row.classList.replace('mb-3', 'mb-0.5'));
+        
+        focusToggleBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+          Exit Focus
+        `;
+        focusToggleBtn.classList.replace("bg-indigo-100", "bg-red-100");
+        focusToggleBtn.classList.replace("text-indigo-700", "text-red-700");
+    } else {
+        headerMain.classList.remove("hidden");
+        filtersContainer.classList.remove("hidden");
+        appMain.classList.replace("p-2", "p-6");
+        questionsContainer.classList.replace("gap-2", "gap-6");
+        actionContainer.classList.replace("p-3", "p-6");
+        
+        questionsContainer.classList.replace("columns-2", "columns-1");
+        
+        document.querySelectorAll('.q-row').forEach(row => row.classList.replace('mb-0.5', 'mb-3'));
+        
+        focusToggleBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H4m0 0v4m0-4l5 5m7-5h4m0 0v4m0-4l-5 5M8 20H4m0 0v-4m0 4l5-5m7 5h4m0 0v-4m0 4l-5-5"></path></svg>
+          Enter Focus
+        `;
+        focusToggleBtn.classList.replace("bg-red-100", "bg-indigo-100");
+        focusToggleBtn.classList.replace("text-red-700", "text-indigo-700");
+    }
+}
+
 function getCustomPapers() {
     return JSON.parse(localStorage.getItem("custom_papers") || "{}");
 }
@@ -394,7 +457,8 @@ function setupBuilder() {
         
         for (let i = 1; i <= qCount; i++) {
             const qDiv = document.createElement("div");
-            qDiv.className = "flex items-center gap-2 p-2 bg-white rounded border break-inside-avoid mb-3";
+            // Task 2 & 3: Applied w-fit mx-auto to builder questions to center perfectly
+            qDiv.className = "flex items-center gap-2 p-2 bg-white rounded border break-inside-avoid mb-3 w-fit mx-auto";
             
             const numSpan = document.createElement("span");
             numSpan.className = "w-6 text-right font-medium text-gray-700 text-sm";
@@ -487,6 +551,11 @@ function setupBuilder() {
 }
 
 function getGradeInfo(score) {
+    if (isEnhancementCourse) {
+        if (score >= 40) return { letter: 'PASS', color: 'text-green-500' };
+        return { letter: 'FAIL', color: 'text-red-600' };
+    }
+
     if(score >= 85) return { letter: 'A+', color: 'text-green-600' };
     if(score >= 70) return { letter: 'A', color: 'text-green-500' };
     if(score >= 65) return { letter: 'A-', color: 'text-green-400' };
@@ -609,6 +678,13 @@ function renderQuestions(yearData) {
   paperActive = false;
   actionContainer.classList.add("opacity-0", "hidden");
 
+  if (semesterSelect.value === "custom") {
+      isEnhancementCourse = yearSelect.value.toLowerCase().startsWith('en');
+  } else {
+      const fileName = subjectSelect.value.split('/').pop().toLowerCase();
+      isEnhancementCourse = fileName.startsWith('en');
+  }
+
   isMultiGlobal = yearData.answerType === "multi";
   
   paperTypeBadge.textContent = isMultiGlobal ? "Multi Answer (Negative Marks)" : "Single Answer";
@@ -621,7 +697,8 @@ function renderQuestions(yearData) {
   for (let i = 1; i <= totalQuestions; i++) {
     const qDiv = document.createElement("div");
     qDiv.id = `q-row-${i}`; 
-    qDiv.className = "flex items-center justify-start gap-1.5 p-1 rounded transition-colors break-inside-avoid mb-3";
+    // Task 2 & 3: Applied w-fit mx-auto to center items perfectly inside their columns
+    qDiv.className = "q-row flex items-center justify-start gap-1.5 p-1 rounded transition-colors break-inside-avoid mb-3 w-fit mx-auto";
     
     const numberSpan = document.createElement("span");
     numberSpan.className = "w-6 text-right font-medium text-gray-700 select-none text-sm";

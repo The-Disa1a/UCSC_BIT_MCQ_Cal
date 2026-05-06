@@ -4,26 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UCSC BIT MCQ Calculator</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     <link rel="stylesheet" href="/src/style.css">
   </head>
-  <body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-8 relative min-h-screen flex flex-col items-center">
+  <body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-8 relative min-h-screen flex flex-col items-center transition-all duration-300">
     
-    <header class="mb-6 w-full max-w-7xl flex flex-col items-center border-b pb-6">
-      <div class="text-center flex flex-col items-center">
-        <!-- Task 2: Rebranding -->
+    <!-- Focus Mode Toggle Button -->
+    <button id="focus-toggle-btn" class="hidden fixed top-4 right-4 bg-red-100 text-red-700 px-3 py-2 rounded-lg shadow-md hover:bg-red-200 transition text-xs font-bold z-50 flex items-center gap-1.5 border border-red-200">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+      Exit Focus
+    </button>
+
+    <header class="mb-6 w-full max-w-7xl flex flex-col items-center border-b pb-6 transition-all duration-300">
+      <div id="header-main" class="text-center flex flex-col items-center transition-all duration-300">
         <h1 class="text-4xl font-bold text-blue-600 tracking-tight">UCSC BIT MCQ Calculator</h1>
         <div class="mt-3">
           <span id="paper-type-badge" class="px-4 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hidden"></span>
         </div>
+        <button id="open-builder-btn" class="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 underline flex items-center gap-1 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Build a custom answer sheet
+        </button>
       </div>
 
-      <button id="open-builder-btn" class="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 underline flex items-center gap-1 transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        Build a custom answer sheet
-      </button>
-
       <!-- Timer Container -->
-      <div id="timer-wrapper" class="hidden mt-6 flex items-center bg-gray-800 text-white p-2 rounded-lg shadow-md">
+      <div id="timer-wrapper" class="hidden mt-6 flex items-center bg-gray-800 text-white p-2 rounded-lg shadow-md transition-all duration-300">
         <div id="timer-display-container" class="flex items-center gap-4 px-3">
           <span id="timer-display" class="text-2xl font-mono font-bold tracking-widest text-blue-400">00:00:00</span>
           <div class="flex gap-3 border-l border-gray-600 pl-4">
@@ -43,10 +48,10 @@
       </div>
     </header>
 
-    <main id="app" class="bg-white p-6 rounded-lg shadow-sm border w-full max-w-7xl flex flex-col items-center">
+    <main id="app" class="bg-white p-6 rounded-lg shadow-sm border w-full max-w-7xl flex flex-col items-center transition-all duration-300">
       
       <!-- Top Filters -->
-      <div class="flex flex-wrap justify-center items-center gap-4 mb-8 w-full" id="filters-container">
+      <div class="flex flex-wrap justify-center items-center gap-4 mb-8 w-full transition-all duration-300" id="filters-container">
         <select id="semester-select" class="border p-2.5 rounded-lg w-full sm:w-48 bg-gray-50 disabled:bg-gray-200 outline-none focus:border-blue-500">
           <option value="" disabled selected>Select Semester</option>
           <option value="sem1">Semester 1</option>
@@ -76,10 +81,10 @@
           
         <!-- Left: Question Grid -->
         <div class="w-full md:flex-grow flex flex-col items-center">
-          <div id="questions-container" class="hidden w-full pb-4 columns-1 sm:columns-2 lg:columns-4 gap-6"></div>
+          <!-- Task 2 & 3: Centered Container (max-w-4xl mx-auto) -->
+          <div id="questions-container" class="hidden w-full max-w-4xl mx-auto pb-4 columns-1 sm:columns-2 lg:columns-4 gap-6 transition-all duration-300"></div>
           
-          <!-- Comments Box -->
-          <div id="comments-box" class="hidden mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r w-full max-w-3xl">
+          <div id="comments-box" class="hidden mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r w-full max-w-3xl mx-auto">
             <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               Paper Comments:
@@ -138,7 +143,7 @@
 
     <!-- Custom Paper Builder Modal -->
     <div id="builder-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         
         <div class="p-6 border-b bg-gray-50 flex justify-between items-center">
           <h2 class="text-2xl font-bold text-gray-800">Build Answer Sheet</h2>
@@ -168,7 +173,6 @@
               <label class="block text-sm font-semibold text-gray-700 mb-1">Question Count</label>
               <input type="number" id="build-qcount" value="40" min="1" max="100" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
             </div>
-            <!-- Task 1.5: Total Marks Field added -->
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-1">Total Marks</label>
               <input type="number" id="build-total-marks" value="100" min="1" class="w-full border p-2.5 rounded outline-none focus:border-indigo-500">
@@ -188,7 +192,7 @@
             <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
             Select the CORRECT answers. You must select at least 1 per question.
           </p>
-          <div id="builder-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6 pb-6"></div>
+          <div id="builder-grid" class="w-full max-w-4xl mx-auto columns-1 sm:columns-2 lg:columns-3 gap-6 pb-6"></div>
           <div class="border-t pt-4 mt-2 flex justify-end gap-3">
             <button id="builder-back-btn" class="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded transition font-medium">Back</button>
             <button id="builder-save-btn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-bold transition shadow">Save Custom Paper</button>
@@ -199,13 +203,19 @@
     </div>
 
     <!-- Missing Questions Toast -->
-    <div id="toast-popup" class="fixed bottom-6 right-6 bg-orange-100 border-l-4 border-orange-500 text-orange-800 p-4 rounded-lg shadow-2xl transition-transform translate-x-[150%] duration-300 z-50 max-w-sm flex items-start gap-3">
+    <div id="toast-popup" class="fixed bottom-14 right-6 bg-orange-100 border-l-4 border-orange-500 text-orange-800 p-4 rounded-lg shadow-2xl transition-transform translate-x-[150%] duration-300 z-50 max-w-sm flex items-start gap-3">
       <svg class="w-6 h-6 shrink-0 mt-0.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
       <div>
         <h4 class="font-bold text-sm">Incomplete Paper</h4>
         <p id="toast-message" class="text-xs mt-1 text-orange-700"></p>
       </div>
     </div>
+
+    <!-- Report Issue Button -->
+    <a href="https://github.com/The-Disa1a/UCSC_BIT_MCQ_Cal/issues" target="_blank" class="fixed bottom-3 right-3 flex items-center gap-1.5 bg-gray-800 text-gray-100 px-3 py-1.5 rounded-lg shadow-lg hover:bg-gray-700 transition text-xs font-medium z-50 border border-gray-600">
+      <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      Report an Issue
+    </a>
 
     <script type="module" src="/src/main.js"></script>
   </body>
