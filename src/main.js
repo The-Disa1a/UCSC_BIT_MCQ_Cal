@@ -18,6 +18,7 @@ const commentsBox = document.getElementById("comments-box");
 const commentsText = document.getElementById("comments-text");
 const toastPopup = document.getElementById("toast-popup");
 const toastMessage = document.getElementById("toast-message");
+const layoutWrapper = document.getElementById("layout-wrapper");
 
 // Focus Mode DOM Elements
 const focusToggleBtn = document.getElementById("focus-toggle-btn");
@@ -55,6 +56,16 @@ const builderNextBtn = document.getElementById("builder-next-btn");
 const builderBackBtn = document.getElementById("builder-back-btn");
 const builderSaveBtn = document.getElementById("builder-save-btn");
 const builderGrid = document.getElementById("builder-grid");
+
+// Safelisted column classes for Tailwind JIT
+const colClasses = {
+    1: 'columns-1', 2: 'columns-2', 3: 'columns-3', 4: 'columns-4', 
+    5: 'columns-5', 6: 'columns-6', 7: 'columns-7', 8: 'columns-8', 9: 'columns-9', 10: 'columns-10'
+};
+const mdColClasses = {
+    1: 'md:columns-1', 2: 'md:columns-2', 3: 'md:columns-3', 4: 'md:columns-4', 
+    5: 'md:columns-5', 6: 'md:columns-6', 7: 'md:columns-7', 8: 'md:columns-8', 9: 'md:columns-9', 10: 'md:columns-10'
+};
 
 // State Variables
 let papersData = null;
@@ -126,7 +137,7 @@ async function init() {
           hasTimerStartedOnce = true;
       }
 
-      // Task 1: Auto Focus Mode ONLY on mobile screens (< 768px)
+      // Task 1: Auto Focus Mode ONLY on mobile (< 768px)
       if (window.innerWidth < 768 && !isFocusMode) {
           toggleFocusMode();
           focusToggleBtn.classList.remove("hidden");
@@ -169,7 +180,7 @@ async function init() {
     resetTimer();
     hasTimerStartedOnce = false; 
 
-    // Auto focus again if retesting on mobile
+    // Auto Focus trigger specifically for Mobile on Retest
     if (window.innerWidth < 768 && !isFocusMode) {
         toggleFocusMode();
         focusToggleBtn.classList.remove("hidden");
@@ -387,9 +398,6 @@ function toggleFocusMode() {
         questionsContainer.classList.replace("gap-6", "gap-2");
         actionContainer.classList.replace("p-6", "p-3");
         
-        // Task 1.1: Force 2-columns on mobile during Focus Mode to perfectly compact the UI
-        questionsContainer.classList.replace("columns-1", "columns-2");
-        
         document.querySelectorAll('.q-row').forEach(row => row.classList.replace('mb-3', 'mb-0.5'));
         
         focusToggleBtn.innerHTML = `
@@ -404,8 +412,6 @@ function toggleFocusMode() {
         appMain.classList.replace("p-2", "p-6");
         questionsContainer.classList.replace("gap-2", "gap-6");
         actionContainer.classList.replace("p-3", "p-6");
-        
-        questionsContainer.classList.replace("columns-2", "columns-1");
         
         document.querySelectorAll('.q-row').forEach(row => row.classList.replace('mb-0.5', 'mb-3'));
         
@@ -455,9 +461,21 @@ function setupBuilder() {
         const qCount = parseInt(document.getElementById("build-qcount").value);
         builderGrid.innerHTML = "";
         
+        // Dynamic builder columns
+        let b_mCols = 2; let b_dCols = 4;
+        if (qCount % 4 === 0) { b_mCols = 2; b_dCols = 4; }
+        else if (qCount % 2 === 0) { b_mCols = 2; b_dCols = 2; }
+        else {
+            let div = 2;
+            while(qCount % div !== 0 && div <= qCount) div++;
+            b_mCols = div; b_dCols = div;
+        }
+        
+        builderGrid.className = `w-full max-w-5xl mx-auto pb-6 gap-6 ${colClasses[b_mCols]} ${mdColClasses[b_dCols]}`;
+
         for (let i = 1; i <= qCount; i++) {
             const qDiv = document.createElement("div");
-            // Task 2 & 3: Applied w-fit mx-auto to builder questions to center perfectly
+            // Task 2: Centered dynamically inside column
             qDiv.className = "flex items-center gap-2 p-2 bg-white rounded border break-inside-avoid mb-3 w-fit mx-auto";
             
             const numSpan = document.createElement("span");
@@ -694,10 +712,41 @@ function renderQuestions(yearData) {
 
   const totalQuestions = yearData.qcount;
 
+  // Task 1: Responsive Math for Perfect CSS Columns
+  let mCols = 2;
+  let dCols = 4;
+
+  if (totalQuestions % 4 === 0) {
+      mCols = 2;
+      dCols = 4;
+  } else if (totalQuestions % 2 === 0) {
+      mCols = 2;
+      dCols = 2;
+  } else {
+      let div = 2;
+      while (totalQuestions % div !== 0 && div <= totalQuestions) {
+          div++;
+      }
+      mCols = div;
+      dCols = div;
+  }
+
+  // Inject computed column count
+  questionsContainer.className = `hidden w-full max-w-5xl mx-auto pb-4 gap-6 transition-all duration-300 ${colClasses[mCols]} ${mdColClasses[dCols]}`;
+
+  // Task 1: Action container push to bottom if 5+ columns (Too dense for side-by-side)
+  if (dCols >= 5) {
+      layoutWrapper.className = "flex flex-col gap-8 w-full justify-center items-center";
+      actionContainer.className = "hidden w-full max-w-md flex-shrink-0 bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm transition-all duration-500 opacity-0 transform translate-y-4";
+  } else {
+      layoutWrapper.className = "flex flex-col md:flex-row gap-8 w-full justify-center items-start";
+      actionContainer.className = "hidden w-full md:w-80 flex-shrink-0 md:sticky md:top-6 bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm transition-all duration-500 opacity-0 transform translate-y-4";
+  }
+
   for (let i = 1; i <= totalQuestions; i++) {
     const qDiv = document.createElement("div");
     qDiv.id = `q-row-${i}`; 
-    // Task 2 & 3: Applied w-fit mx-auto to center items perfectly inside their columns
+    // Task 2: w-fit mx-auto locks bubbles perfectly in center of column lane
     qDiv.className = "q-row flex items-center justify-start gap-1.5 p-1 rounded transition-colors break-inside-avoid mb-3 w-fit mx-auto";
     
     const numberSpan = document.createElement("span");
