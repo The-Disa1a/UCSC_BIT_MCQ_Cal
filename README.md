@@ -1,6 +1,6 @@
-# UCSC BIT MCQ Calculator
+# UCSC BIT Exam Helper
 
-A lightning-fast, client-side tool designed to help University of Colombo School of Computing (UCSC) BIT students practice and grade their past paper MCQs with precision and ease.
+A browser-based tool designed to help University of Colombo School of Computing (UCSC) BIT students practice past papers, calculate MCQ scores, and experiment with AI-assisted essay marking.
 
 ![tool_usecase](public/answer_sheets/product.png)
 
@@ -8,14 +8,15 @@ A lightning-fast, client-side tool designed to help University of Colombo School
 
 ## 🚀 About The Project
 
-Studying for UCSC BIT exams involves a lot of past paper practice. However, manually calculating scores, especially for multi-answer questions with negative marking, is tedious, time-consuming, and error-prone. 
+Studying for UCSC BIT exams involves a lot of past paper practice. Manually calculating scores for multi-answer questions with negative marking is tedious, and essay answers also need to be considered against the syllabus and marking expectations.
 
-**UCSC_BIT_MCQ_Cal** solves this problem by providing an interactive, beautiful interface to:
+**UCSC BIT Exam Helper** provides an interactive interface to:
 -  Instantly grade your performance on official past papers.
 -  Simulate exam conditions with a built-in timer.
 -  Create and save your own custom answer sheets for mock exams or study sessions.
+-  View an essay question paper PDF beside numbered answer fields and request integer marks from Gemini.
 
-Because the entire application runs in your browser (client-side), it's incredibly fast, works offline (after the first load), and your selections are completely private.
+The MCQ calculator and custom papers run in your browser. Essay marking sends the selected question paper, lecturer answer PDF, subject notes, and student answers to Google's Gemini API using the user's own API key. Do not submit sensitive information; Gemini's terms and data handling apply.
 
 ---
 
@@ -25,6 +26,8 @@ Because the entire application runs in your browser (client-side), it's incredib
 - **Instant Grading & Analysis:** Get your final score, university-standard letter grade (A+, B-, E, etc.), and a detailed breakdown of your performance (Full Marks, Partial Marks, Wrong).
 - **📝 Custom Paper Builder:** An advanced tool to create your own answer sheets! Define the question count, answer type, time limit, and even add official comments.
 - **💾 Local Storage:** Your custom-built papers are saved directly in your browser, ready to use anytime.
+- **📝 Essay Practice (early version):** Preview a question paper PDF next to numbered answer fields, then request structured integer marks from Gemini 3.1 Flash-Lite. The lecturer's answer is a reference example, not an exact-match key.
+- **🔐 User-provided Gemini key:** The key can be encrypted and saved in the current browser, or used for one session without saving.
 - **⏱️ Live Exam Timer:** Practice under pressure with a fully functional timer (`HH:MM:SS`) that starts when you make your first selection. Includes pause, reset, and hide controls.
 - **📱 Fully Responsive Design:** The interface adapts beautifully from large desktop monitors to mobile phones, with a unique vertical-column layout for easy scanning.
 - **Interactive UI:**

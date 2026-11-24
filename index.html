@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UCSC BIT MCQ Calculator</title>
+    <title>UCSC BIT Exam Helper</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     <link rel="stylesheet" href="/src/style.css">
   </head>
@@ -17,13 +17,16 @@
 
     <header class="mb-6 w-full max-w-7xl flex flex-col items-center border-b pb-6 transition-all duration-300">
       <div id="header-main" class="text-center flex flex-col items-center transition-all duration-300">
-        <h1 class="text-4xl font-bold text-blue-600 tracking-tight">UCSC BIT MCQ Calculator</h1>
+        <h1 class="text-4xl font-bold text-blue-600 tracking-tight">UCSC BIT Exam Helper</h1>
         <div class="mt-3">
           <span id="paper-type-badge" class="px-4 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hidden"></span>
         </div>
         <button id="open-builder-btn" class="mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800 underline flex items-center gap-1 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
           Build a custom answer sheet
+        </button>
+        <button id="launch-essay-btn" class="mt-3 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-sm transition">
+          Essay practice
         </button>
       </div>
 
@@ -137,6 +140,76 @@
       </div>
     </main>
 
+    <main id="essay-workspace" class="hidden w-full max-w-[1600px] bg-white rounded-xl shadow-sm border p-4 md:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">Essay practice</h2>
+          <p class="text-sm text-gray-500">Keep the paper open while you write and mark your answers.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="essay-answers-tab" class="px-4 py-2 rounded-lg text-sm font-semibold text-indigo-700 bg-indigo-50">Answers</button>
+          <button id="essay-settings-tab" class="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100">Settings</button>
+          <button id="essay-back-btn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200">Back to MCQs</button>
+        </div>
+      </div>
+
+      <div id="essay-status" class="hidden mb-4 rounded-lg border p-3 text-sm" role="status" aria-live="polite"></div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+        <section class="rounded-xl border bg-gray-50 overflow-hidden">
+          <div class="p-4 border-b bg-white">
+            <label for="essay-paper-file" class="block text-sm font-semibold text-gray-800">Question paper PDF</label>
+            <input id="essay-paper-file" type="file" accept="application/pdf,.pdf" class="mt-2 block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100">
+            <p class="mt-1 text-xs text-gray-500">The selected PDF is shown here and sent to Gemini for question OCR.</p>
+          </div>
+          <div id="essay-paper-placeholder" class="flex min-h-[65vh] items-center justify-center p-8 text-center text-sm text-gray-500">
+            Choose the question paper PDF to preview it here.
+          </div>
+          <iframe id="essay-paper-preview" class="hidden h-[65vh] w-full bg-white" title="Question paper PDF preview"></iframe>
+        </section>
+
+        <section class="min-w-0">
+          <div id="essay-answer-panel">
+            <div class="mb-3">
+              <h3 class="text-lg font-bold text-gray-900">Your answers</h3>
+              <p class="text-sm text-gray-500">Add a row for each question or sub-question. Question text is optional if it is clear in the PDF.</p>
+            </div>
+            <div id="essay-question-list" class="space-y-4"></div>
+            <button id="add-essay-question" class="mt-4 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-3 text-sm font-semibold text-gray-600 hover:border-indigo-400 hover:text-indigo-700">
+              + Add answer
+            </button>
+            <button id="mark-essay-answers" class="mt-4 w-full rounded-lg bg-indigo-600 px-5 py-3 font-bold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-60">
+              Calculate marks
+            </button>
+            <div id="essay-results" class="hidden mt-5 rounded-xl border bg-white p-4"></div>
+          </div>
+
+          <div id="essay-settings-panel" class="hidden rounded-xl border bg-gray-50 p-4">
+            <h3 class="text-lg font-bold text-gray-900">Marking setup</h3>
+            <p class="mt-1 text-sm text-gray-600">Your key is encrypted and saved only in this browser. You can also use an unsaved key for one session.</p>
+            <label for="gemini-api-key" class="mt-4 block text-sm font-semibold text-gray-800">Gemini API key</label>
+            <input id="gemini-api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your Gemini API key" class="mt-1 w-full rounded-lg border p-3 outline-none focus:border-indigo-500">
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+              <button id="save-gemini-key" class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700">Save key encrypted</button>
+              <button id="remove-gemini-key" class="rounded-lg px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">Forget saved key</button>
+              <span id="gemini-key-status" class="text-sm text-gray-500"></span>
+            </div>
+
+            <div class="mt-6 border-t pt-4">
+              <h4 class="font-semibold text-gray-800">Course references</h4>
+              <label for="essay-reference-file" class="mt-3 block text-sm font-medium text-gray-700">Lecturer's answers (PDF)</label>
+              <input id="essay-reference-file" type="file" accept="application/pdf,.pdf" class="mt-1 block w-full text-sm text-gray-600">
+              <label for="essay-notes-file" class="mt-4 block text-sm font-medium text-gray-700">Subject notes (PDF or text)</label>
+              <input id="essay-notes-file" type="file" accept="application/pdf,.pdf,.txt,text/plain" class="mt-1 block w-full text-sm text-gray-600">
+              <p class="mt-3 rounded-lg bg-amber-50 p-3 text-xs leading-5 text-amber-900">
+                The paper, lecturer's answers, notes, and your answers are sent to Google Gemini when you mark. Do not upload sensitive information. Free-tier data handling is subject to Google's terms.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
     <!-- Custom Paper Builder Modal -->
     <div id="builder-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
@@ -214,5 +287,6 @@
     </a>
 
     <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/essay.js"></script>
   </body>
 </html>
