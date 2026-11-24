@@ -1,3 +1,5 @@
+import { fetchPapersMeta, fetchPaperDetails } from "./api.js";
+
 const DB_NAME = "ucsc-bit-exam-helper";
 const DB_VERSION = 1;
 const STORE_NAME = "settings";
@@ -15,10 +17,19 @@ const questionList = document.getElementById("essay-question-list");
 const addQuestionButton = document.getElementById("add-essay-question");
 const markButton = document.getElementById("mark-essay-answers");
 const statusMessage = document.getElementById("essay-status");
+const progressPanel = document.getElementById("essay-progress");
+const progressLabel = document.getElementById("essay-progress-label");
+const progressBar = progressPanel.querySelector('[role="progressbar"]');
 const resultsPanel = document.getElementById("essay-results");
 const paperFileInput = document.getElementById("essay-paper-file");
 const paperPlaceholder = document.getElementById("essay-paper-placeholder");
 const paperPreview = document.getElementById("essay-paper-preview");
+const semesterSelect = document.getElementById("essay-semester-select");
+const subjectSelect = document.getElementById("essay-subject-select");
+const catalogPaperSelect = document.getElementById("essay-paper-select");
+const catalogNoteFieldset = document.getElementById("essay-catalog-notes");
+const catalogNoteOptions = document.getElementById("essay-catalog-note-options");
+const catalogEmptyMessage = document.getElementById("essay-catalog-empty");
 const referenceFileInput = document.getElementById("essay-reference-file");
 const notesFileInput = document.getElementById("essay-notes-file");
 const apiKeyInput = document.getElementById("gemini-api-key");
@@ -30,6 +41,14 @@ let paperFile = null;
 let paperObjectUrl = null;
 let nextQuestionId = 1;
 let previousVisibility = {};
+let papersMetadata = null;
+let selectedSubject = null;
+let selectedSubjectPaperData = null;
+let selectedCatalogPaper = null;
+let subjectLoadVersion = 0;
+let paperLoadVersion = 0;
+const remoteFileCache = new Map();
+const inlinePartCache = new WeakMap();
 
 function openKeyDatabase() {
   if (!("indexedDB" in window)) {
@@ -142,6 +161,286 @@ function showStatus(message, kind = "info") {
 function clearStatus() {
   statusMessage.textContent = "";
   statusMessage.className = "hidden mb-4 rounded-lg border p-3 text-sm";
+}
+
+function updateProgress(message) {
+  progressLabel.textContent = message;
+  progressBar.setAttribute("aria-valuetext", message);
+  progressPanel.classList.remove("hidden");
+}
+
+function clearProgress() {
+  progressPanel.classList.add("hidden");
+}
+
+function publicFileUrl(value) {
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error("A paper or notes link is not a valid URL.");
+  }
+  if (url.protocol !== "https:") throw new Error("Paper and notes links must use HTTPS.");
+
+  if (url.hostname === "github.com") {
+    const segments = url.pathname.split("/").filter(Boolean).map(decodeURIComponent);
+    const blobIndex = segments.indexOf("blob");
+    if (blobIndex === 2 && segments.length > 4) {
+      const [owner, repo] = segments;
+      const branch = segments[3];
+      const filePath = segments.slice(4).map(encodeURIComponent).join("/");
+      return `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}/${filePath}`;
+    }
+  }
+
+  return url.href;
+}
+
+async function getRemoteFile(sourceUrl, fallbackMimeType) {
+  const url = publicFileUrl(sourceUrl);
+  if (remoteFileCache.has(url)) return remoteFileCache.get(url);
+
+  const filePromise = (async () => {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 120000);
+    let response;
+    try {
+      response = await fetch(url, { signal: controller.signal });
+    } catch (error) {
+      if (error.name === "AbortError") {
+        throw new Error(`Loading shared material timed out: ${url}`);
+      }
+      throw new Error(`Could not load shared material: ${url} (${error.message})`);
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+    if (!response.ok) {
+      throw new Error(`Could not load shared material (${response.status}): ${url}`);
+    }
+
+    const blob = await response.blob();
+    const fileName = decodeURIComponent(new URL(url).pathname.split("/").pop());
+    const contentType = blob.type && blob.type !== "application/octet-stream"
+      ? blob.type
+      : fallbackMimeType;
+    return new File([blob], fileName, { type: contentType });
+  })();
+  remoteFileCache.set(url, filePromise);
+
+  try {
+    return await filePromise;
+  } catch (error) {
+    remoteFileCache.delete(url);
+    throw error;
+  }
+}
+
+function resetPaperPreview() {
+  paperFile = null;
+  if (paperObjectUrl) URL.revokeObjectURL(paperObjectUrl);
+  paperObjectUrl = null;
+  paperPreview.src = "";
+  paperPreview.classList.add("hidden");
+  paperPlaceholder.classList.remove("hidden");
+}
+
+function showPaperPreview(file) {
+  if (paperObjectUrl) URL.revokeObjectURL(paperObjectUrl);
+  paperObjectUrl = URL.createObjectURL(file);
+  paperPreview.src = paperObjectUrl;
+  paperPreview.classList.remove("hidden");
+  paperPlaceholder.classList.add("hidden");
+}
+
+function renderCatalogNotes(subject) {
+  catalogNoteOptions.replaceChildren();
+  const notes = Array.isArray(subject && subject.notes) ? subject.notes : [];
+  catalogNoteFieldset.classList.toggle("hidden", notes.length === 0);
+
+  notes.forEach((note, index) => {
+    const noteUrl = typeof note === "string" ? note : note && (note.url || note.file);
+    if (!noteUrl) return;
+    const label = document.createElement("label");
+    label.className = "flex items-start gap-2 rounded-lg bg-white p-2 text-sm text-gray-700";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "catalog-note mt-0.5";
+    checkbox.value = String(index);
+    checkbox.checked = typeof note === "string" || note.defaultSelected !== false;
+    checkbox.setAttribute("aria-label", typeof note === "string" ? noteUrl : note.title || noteUrl);
+
+    const title = document.createElement("span");
+    title.textContent = typeof note === "string" ? decodeURIComponent(noteUrl.split("/").pop()) : note.title || noteUrl;
+    label.append(checkbox, title);
+    catalogNoteOptions.appendChild(label);
+  });
+}
+
+async function loadEssayCatalog() {
+  try {
+    papersMetadata = await fetchPapersMeta();
+    if (!papersMetadata) throw new Error("Could not load the subject list.");
+  } catch (error) {
+    catalogEmptyMessage.textContent = `${error.message} You can still choose local PDFs below.`;
+    catalogEmptyMessage.classList.remove("hidden");
+  }
+}
+
+function supportsEssay(subject) {
+  return subject.essay === true || subject.essay === "true";
+}
+
+function selectCatalogSemester(semester) {
+  subjectLoadVersion++;
+  paperLoadVersion++;
+  subjectSelect.replaceChildren(new Option("Select a subject", ""));
+  subjectSelect.disabled = true;
+  catalogPaperSelect.replaceChildren(new Option("Select a year", ""));
+  catalogPaperSelect.disabled = true;
+  selectedSubject = null;
+  selectedSubjectPaperData = null;
+  selectedCatalogPaper = null;
+  paperFileInput.value = "";
+  resetPaperPreview();
+  renderCatalogNotes(null);
+
+  const subjects = papersMetadata && Array.isArray(papersMetadata[semester])
+    ? papersMetadata[semester].filter(supportsEssay)
+    : [];
+  subjects.forEach(subject => {
+    const option = document.createElement("option");
+    option.value = subject.file;
+    option.textContent = `${subject.code} - ${subject.name}`;
+    subjectSelect.appendChild(option);
+  });
+  subjectSelect.disabled = subjects.length === 0;
+  catalogEmptyMessage.textContent = subjects.length
+    ? ""
+    : "This semester has no subjects marked as supporting essay questions yet.";
+  catalogEmptyMessage.classList.toggle("hidden", subjects.length > 0);
+}
+
+async function selectCatalogSubject(subjectFile) {
+  const loadVersion = ++subjectLoadVersion;
+  paperLoadVersion++;
+  selectedSubject = papersMetadata
+    ? Object.values(papersMetadata).flat().find(subject => subject.file === subjectFile) || null
+    : null;
+  selectedSubjectPaperData = null;
+  selectedCatalogPaper = null;
+  catalogPaperSelect.replaceChildren(new Option("Loading papers...", ""));
+  catalogPaperSelect.disabled = true;
+  renderCatalogNotes(selectedSubject);
+
+  if (!selectedSubject) return;
+
+  try {
+    const paperData = await fetchPaperDetails(subjectFile);
+    if (loadVersion !== subjectLoadVersion) return;
+    selectedSubjectPaperData = paperData;
+    if (!selectedSubjectPaperData) throw new Error(`Could not load ${selectedSubject.code} papers.`);
+
+    const essayYears = Object.entries(selectedSubjectPaperData)
+      .filter(([, yearData]) => yearData && Object.prototype.hasOwnProperty.call(yearData, "essay"));
+    catalogPaperSelect.replaceChildren(new Option(
+      essayYears.length ? "Select a year" : "No essay question list available",
+      ""
+    ));
+    essayYears.forEach(([year]) => {
+      const option = document.createElement("option");
+      option.value = year;
+      option.textContent = year;
+      catalogPaperSelect.appendChild(option);
+    });
+    catalogPaperSelect.disabled = essayYears.length === 0;
+    catalogEmptyMessage.classList.toggle("hidden", essayYears.length > 0);
+    if (essayYears.length === 0) {
+      catalogEmptyMessage.textContent = "This subject has no essay question numbers in its paper data yet.";
+    }
+  } catch (error) {
+    if (loadVersion !== subjectLoadVersion) return;
+    catalogPaperSelect.replaceChildren(new Option("Could not load papers", ""));
+    catalogEmptyMessage.textContent = error.message;
+    catalogEmptyMessage.classList.remove("hidden");
+  }
+}
+
+function formatQuestionNumber(parts) {
+  return parts.map((part, index) => index === 0 ? part : `(${part})`).join(" ");
+}
+
+function getEssayQuestionNumbers(essayData) {
+  const numbers = [];
+  const fullQuestionNumber = /^\d+(?:\s*\([^)]+\)\s*)*$/;
+
+  function visit(value, parents) {
+    if (Array.isArray(value)) {
+      value.forEach(part => {
+        if (typeof part === "string" || typeof part === "number") {
+          const label = String(part).trim();
+          if (!label) return;
+          numbers.push(parents.length === 0 || fullQuestionNumber.test(label)
+            ? label
+            : formatQuestionNumber([...parents, label.replace(/^\(|\)$/g, "")]));
+        } else {
+          visit(part, parents);
+        }
+      });
+    } else if (value && typeof value === "object") {
+      Object.entries(value).forEach(([key, child]) => visit(child, [...parents, key]));
+    }
+  }
+
+  visit(essayData, []);
+  return Array.from(new Set(numbers));
+}
+
+function renderEssayQuestionRows(questionNumbers) {
+  questionList.replaceChildren();
+  const questions = questionNumbers.length ? questionNumbers : [""];
+  questions.forEach(number => questionList.appendChild(createQuestionCard(number)));
+}
+
+async function selectCatalogPaper(year) {
+  const loadVersion = ++paperLoadVersion;
+  selectedCatalogPaper = selectedSubjectPaperData
+    ? selectedSubjectPaperData[year] || null
+    : null;
+
+  renderEssayQuestionRows(selectedCatalogPaper
+    ? getEssayQuestionNumbers(selectedCatalogPaper.essay)
+    : []);
+
+  if (!selectedCatalogPaper) {
+    paperFileInput.value = "";
+    resetPaperPreview();
+    clearStatus();
+    return;
+  }
+
+  const paperUrl = selectedCatalogPaper.paperPdf
+    || selectedCatalogPaper.questionPaperPdf
+    || selectedCatalogPaper.questionPaper;
+  if (!paperUrl) {
+    paperFileInput.value = "";
+    resetPaperPreview();
+    clearStatus();
+    return;
+  }
+
+  try {
+    const file = await getRemoteFile(paperUrl, "application/pdf");
+    if (loadVersion !== paperLoadVersion) return;
+    paperFile = file;
+    paperFileInput.value = "";
+    showPaperPreview(file);
+    clearStatus();
+  } catch (error) {
+    if (loadVersion !== paperLoadVersion) return;
+    resetPaperPreview();
+    showStatus(error.message, "error");
+  }
 }
 
 function showAnswersTab() {
@@ -306,41 +605,79 @@ function readAnswerRows() {
 }
 
 function fileAsInlinePart(file, fallbackMimeType) {
-  return file.arrayBuffer().then(buffer => {
-    const bytes = new Uint8Array(buffer);
-    let binary = "";
-    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
-      binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
-    }
-    return {
-      inline_data: {
-        mime_type: file.type || fallbackMimeType,
-        data: window.btoa(binary)
+  if (inlinePartCache.has(file)) return inlinePartCache.get(file);
+  const partPromise = file.arrayBuffer()
+    .then(buffer => {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
       }
-    };
-  });
+      return {
+        inline_data: {
+          mime_type: file.type || fallbackMimeType,
+          data: window.btoa(binary)
+        }
+      };
+    })
+    .catch(error => {
+      inlinePartCache.delete(file);
+      throw error;
+    });
+  inlinePartCache.set(file, partPromise);
+  return partPromise;
 }
 
 function isTextFile(file) {
   return file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
 }
 
-async function buildGeminiRequestParts(rows) {
+async function buildGeminiRequestParts(rows, onProgress = () => {}) {
   if (!paperFile) throw new Error("Choose the question paper PDF first.");
-  if (!referenceFileInput.files[0]) {
+  if (paperFile.type !== "application/pdf" && !paperFile.name.toLowerCase().endsWith(".pdf")) {
+    throw new Error("The question paper must be a PDF.");
+  }
+
+  const referenceFiles = Array.from(referenceFileInput.files);
+  if (selectedCatalogPaper && (selectedCatalogPaper.answerPdf || selectedCatalogPaper.lectureAnswers)) {
+    const references = selectedCatalogPaper.answerPdf || selectedCatalogPaper.lectureAnswers;
+    const referenceLinks = Array.isArray(references) ? references : [references];
+    for (const link of referenceLinks) {
+      onProgress(`Loading lecturer reference ${referenceFiles.length + 1}...`);
+      referenceFiles.unshift(await getRemoteFile(link, "application/pdf"));
+    }
+  }
+
+  if (referenceFiles.length === 0) {
     throw new Error("Choose the lecturer's answer PDF in Settings first.");
   }
-  if (!notesFileInput.files[0]) {
+
+  const noteFiles = Array.from(notesFileInput.files);
+  if (selectedSubject) {
+    const notes = Array.isArray(selectedSubject.notes) ? selectedSubject.notes : [];
+    const selectedNoteIndexes = new Set(
+      Array.from(catalogNoteOptions.querySelectorAll(".catalog-note:checked"))
+        .map(input => Number(input.value))
+    );
+    for (const index of selectedNoteIndexes) {
+      const note = notes[index];
+      const link = typeof note === "string" ? note : note && (note.url || note.file);
+      if (link) {
+        onProgress(`Loading syllabus notes ${noteFiles.length + 1}...`);
+        noteFiles.unshift(await getRemoteFile(link, "application/pdf"));
+      }
+    }
+  }
+
+  if (noteFiles.length === 0) {
     throw new Error("Choose the subject notes in Settings first.");
   }
 
-  const referenceFile = referenceFileInput.files[0];
-  const notesFile = notesFileInput.files[0];
   const rowsForPrompt = rows.map(({ images, ...row }) => ({
     ...row,
     answerImageNames: images.map(image => image.name)
   }));
-  const textParts = [
+  const promptSections = [
     "Mark the student's answers using the question paper, syllabus notes, and lecturer's answers supplied with this request.",
     "The lecturer's answer is an example of a valid answer and expected depth, not an exact answer to match. Award credit for correct equivalent explanations, terminology, and approaches that are within the syllabus.",
     "Do not require the student's wording to match the lecturer's wording. Do not introduce requirements from outside the supplied syllabus. Use the visible maximum marks for each question; if an optional maximum was provided in the answer data, use that value.",
@@ -348,30 +685,44 @@ async function buildGeminiRequestParts(rows) {
     `Student answer rows: ${JSON.stringify(rowsForPrompt)}`
   ];
 
+  onProgress("Preparing the question paper for Gemini...");
   const parts = [
-    { text: textParts.join("\n\n") },
+    { text: promptSections.join("\n\n") },
     { text: "The next attached PDF is the question paper. Use it to identify question wording and maximum marks." },
     await fileAsInlinePart(paperFile, "application/pdf"),
-    { text: "The next attached PDF contains the lecturer's answers. Treat it as an example, not an exact-match key." },
-    await fileAsInlinePart(referenceFile, "application/pdf")
   ];
 
-  if (isTextFile(notesFile)) {
-    textParts.push(`\n\nBEGIN SUBJECT NOTES\n${await notesFile.text()}\nEND SUBJECT NOTES`);
-    parts[0].text = textParts.join("\n\n");
-  } else {
-    if (notesFile.type !== "application/pdf" && !notesFile.name.toLowerCase().endsWith(".pdf")) {
-      throw new Error("Subject notes must be a PDF or a plain-text file.");
+  for (const referenceFile of referenceFiles) {
+    if (referenceFile.type !== "application/pdf" && !referenceFile.name.toLowerCase().endsWith(".pdf")) {
+      throw new Error(`Lecturer answer "${referenceFile.name}" must be a PDF.`);
     }
-    parts.push({ text: "The next attached PDF contains the subject notes. Use it to keep marking within the syllabus." });
+    onProgress(`Preparing lecturer reference: ${referenceFile.name}`);
+    parts.push({ text: `The next attached PDF contains lecturer answer material (${referenceFile.name}). Treat it as an example, not an exact-match key.` });
+    parts.push(await fileAsInlinePart(referenceFile, "application/pdf"));
+  }
+
+  for (const notesFile of noteFiles) {
+    if (isTextFile(notesFile)) {
+      onProgress(`Preparing syllabus notes: ${notesFile.name}`);
+      promptSections.push(`BEGIN SUBJECT NOTES: ${notesFile.name}\n${await notesFile.text()}\nEND SUBJECT NOTES`);
+      continue;
+    }
+    if (notesFile.type !== "application/pdf" && !notesFile.name.toLowerCase().endsWith(".pdf")) {
+      throw new Error(`Subject notes "${notesFile.name}" must be a PDF or plain-text file.`);
+    }
+    onProgress(`Preparing syllabus notes: ${notesFile.name}`);
+    parts.push({ text: `The next attached PDF contains syllabus notes (${notesFile.name}). Use it to keep marking within the syllabus.` });
     parts.push(await fileAsInlinePart(notesFile, "application/pdf"));
   }
+
+  parts[0].text = promptSections.join("\n\n");
 
   for (const row of rows) {
     for (const image of row.images) {
       if (!image.type.startsWith("image/")) {
         throw new Error(`Unsupported answer image "${image.name}". Use PNG, JPEG, or WebP.`);
       }
+      onProgress(`Preparing answer image for ${row.questionNumber}...`);
       parts.push({ text: `The next image is part of the student's answer for question ${row.questionNumber}.` });
       parts.push(await fileAsInlinePart(image, image.type));
     }
@@ -380,43 +731,64 @@ async function buildGeminiRequestParts(rows) {
   return parts;
 }
 
-async function requestMarks(apiKey, parts, rows) {
+async function requestMarks(apiKey, parts, rows, onProgress) {
   const questionNumbers = rows.map(row => row.questionNumber);
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey
-      },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              results: {
-                type: "ARRAY",
-                items: {
-                  type: "OBJECT",
-                  properties: {
-                    question_number: { type: "STRING" },
-                    marks: { type: "INTEGER" }
-                  },
-                  required: ["question_number", "marks"]
-                }
-              }
-            },
-            required: ["results"]
-          }
-        }
-      })
-    }
-  );
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 180000);
+  let response;
 
-  const payload = await response.json();
+  onProgress("Sending PDFs and answers to Gemini; waiting for its response...");
+  try {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
+        },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                results: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      question_number: { type: "STRING" },
+                      marks: { type: "INTEGER" }
+                    },
+                    required: ["question_number", "marks"]
+                  }
+                }
+              },
+              required: ["results"]
+            }
+          }
+        }),
+        signal: controller.signal
+      }
+    );
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("Gemini did not respond within 3 minutes. Check your connection and try again.");
+    }
+    throw new Error(`The Gemini request could not be completed: ${error.message}`);
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+
+  onProgress("Gemini responded; validating the returned marks...");
+  let payload;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new Error("Gemini returned a response that could not be read as JSON.");
+  }
   if (!response.ok) {
     throw new Error(payload.error && payload.error.message
       ? payload.error.message
@@ -520,20 +892,24 @@ function renderResults(results) {
 
 async function calculateMarks() {
   clearStatus();
+  clearProgress();
   resultsPanel.classList.add("hidden");
+  markButton.disabled = true;
+  markButton.textContent = "Preparing...";
 
   try {
     const rows = readAnswerRows();
-    const parts = await buildGeminiRequestParts(rows);
     const apiKey = await getApiKeyForMarking();
-
-    markButton.disabled = true;
-    markButton.textContent = "Reading paper and marking...";
-    const results = await requestMarks(apiKey, parts, rows);
+    const progress = message => updateProgress(message);
+    progress("Preparing the selected paper, notes, and answers...");
+    const parts = await buildGeminiRequestParts(rows, progress);
+    const results = await requestMarks(apiKey, parts, rows, progress);
     renderResults(results);
+    clearProgress();
     showStatus("Marks are ready. Check the result against the paper; OCR or AI marking can make mistakes.", "success");
   } catch (error) {
-    showStatus(error.message || "Could not calculate marks.", "error");
+    clearProgress();
+    showStatus(`Marking failed: ${error.message || "Could not calculate marks."}`, "error");
   } finally {
     markButton.disabled = false;
     markButton.textContent = "Calculate marks";
@@ -573,7 +949,28 @@ addQuestionButton.addEventListener("click", () => {
 });
 markButton.addEventListener("click", calculateMarks);
 
+semesterSelect.addEventListener("change", () => {
+  selectCatalogSemester(semesterSelect.value);
+  renderEssayQuestionRows([]);
+  clearStatus();
+});
+
+subjectSelect.addEventListener("change", () => {
+  paperFileInput.value = "";
+  resetPaperPreview();
+  renderEssayQuestionRows([]);
+  selectCatalogSubject(subjectSelect.value);
+  clearStatus();
+});
+
+catalogPaperSelect.addEventListener("change", () => {
+  selectCatalogPaper(catalogPaperSelect.value);
+});
+
 paperFileInput.addEventListener("change", () => {
+  paperLoadVersion++;
+  selectedCatalogPaper = null;
+  catalogPaperSelect.value = "";
   paperFile = paperFileInput.files[0] || null;
   if (paperObjectUrl) URL.revokeObjectURL(paperObjectUrl);
   paperObjectUrl = null;
@@ -589,13 +986,11 @@ paperFileInput.addEventListener("change", () => {
     paperFile = null;
     paperFileInput.value = "";
     showStatus("Choose a PDF file for the question paper.", "error");
+    resetPaperPreview();
     return;
   }
 
-  paperObjectUrl = URL.createObjectURL(paperFile);
-  paperPreview.src = paperObjectUrl;
-  paperPreview.classList.remove("hidden");
-  paperPlaceholder.classList.add("hidden");
+  showPaperPreview(paperFile);
   clearStatus();
 });
 
@@ -630,3 +1025,4 @@ removeKeyButton.addEventListener("click", async () => {
 
 questionList.appendChild(createQuestionCard("1"));
 refreshKeyStatus();
+loadEssayCatalog();

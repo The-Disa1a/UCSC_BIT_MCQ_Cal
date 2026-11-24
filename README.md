@@ -18,6 +18,20 @@ Studying for UCSC BIT exams involves a lot of past paper practice. Manually calc
 
 The MCQ calculator and custom papers run in your browser. Essay marking sends the selected question paper, lecturer answer PDF, subject notes, and student answers to Google's Gemini API using the user's own API key. Do not submit sensitive information; Gemini's terms and data handling apply.
 
+Essay practice uses the existing `public/answer_sheets/papers.json` subject list and each subject's paper JSON. Mark essay-enabled subjects with `"essay": true` (the current string values `"true"` and `"false"` are also supported). Add shared notes as HTTPS URLs in the subject's `notes` array; GitHub `blob` links are converted to raw-file links when fetched. Only link materials you have permission to share.
+
+Add an `essay` property to each year that has essay questions. It can be a flat list of complete labels, which is the preferred format when only question numbers are needed:
+
+```json
+{
+  "2024": {
+    "essay": ["1 (a) (i)", "1 (a) (ii)", "2 (a)"]
+  }
+}
+```
+
+Nested question structures are also supported for existing data. A year may optionally include `paperPdf` (or `questionPaperPdf` / `questionPaper`) and `answerPdf` (or `lectureAnswers`) URLs to load the question paper and lecturer reference automatically. Students can instead choose local PDFs, and can add multiple local lecturer-answer PDFs or notes files in Settings.
+
 ---
 
 ## ✨ Key Features

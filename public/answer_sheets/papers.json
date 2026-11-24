@@ -3,167 +3,202 @@
         {
             "file": "sem1/it1106.json",
             "code": "IT1106",
-            "name": "Information Systems"
+            "name": "Information Systems",
+            "essay": "false"
         },
         {
             "file": "sem1/it1206.json",
             "code": "IT1206",
-            "name": "Computer Systems"
+            "name": "Computer Systems",
+            "essay": "false"
         },
         {
             "file": "sem1/it1306.json",
             "code": "IT1306",
-            "name": "FOSS for Personal Computing"
+            "name": "FOSS for Personal Computing",
+            "essay": "false"
         },
         {
             "file": "sem1/it1406.json",
             "code": "IT1406",
-            "name": "Introduction to Programming"
+            "name": "Introduction to Programming",
+            "essay": "false"
         },
         {
             "file": "sem1/it1506.json",
             "code": "IT1506",
-            "name": "Fundamentals of Mathematics"
+            "name": "Fundamentals of Mathematics",
+            "essay": "false"
         }
     ],
     "sem2": [
         {
             "file": "sem2/en2106.json",
             "code": "EN2106",
-            "name": "Communication Skills I"
+            "name": "Communication Skills I",
+            "essay": "false"
         },
         {
             "file": "sem2/it2106.json",
             "code": "IT2106",
-            "name": "Mathematics for Computing I"
+            "name": "Mathematics for Computing I",
+            "essay": "false"
         },
         {
             "file": "sem2/it2206.json",
             "code": "IT2206",
-            "name": "Fundamentals of Software Engineering"
+            "name": "Fundamentals of Software Engineering",
+            "essay": "false"
         },
         {
             "file": "sem2/it2306.json",
             "code": "IT2306",
-            "name": "Database Systems"
+            "name": "Database Systems",
+            "essay": "false"
         },
         {
             "file": "sem2/it2406.json",
             "code": "IT2406",
-            "name": "Web Application Development I"
+            "name": "Web Application Development I",
+            "essay": "false"
         }
     ],
     "sem3": [
         {
             "file": "sem3/en3106.json",
             "code": "EN3106",
-            "name": "Communication Skills II"
+            "name": "Communication Skills II",
+            "essay": "false"
         },
         {
             "file": "sem3/it3106.json",
             "code": "IT3106",
-            "name": "Object Oriented Analysis & Design"
+            "name": "Object Oriented Analysis & Design",
+            "essay": "true"
         },
         {
             "file": "sem3/it3206.json",
             "code": "IT3206",
-            "name": "Data Structures and Algorithms"
+            "name": "Data Structures and Algorithms",
+            "essay": "true"
         },
         {
             "file": "sem3/it3306.json",
             "code": "IT3306",
-            "name": "Data Management Systems"
+            "name": "Data Management Systems",
+            "essay": "true"
         },
         {
             "file": "sem3/it3406.json",
             "code": "IT3406",
-            "name": "Web Application Development II"
+            "name": "Web Application Development II",
+            "essay": "true",
+            "notes": ["https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/1_Server%20Side%20Web%20Dev%20using%20PHP%20MYSQL.pdf",
+        "https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/2_Fundamentals%20of%20Asynchronous%20JS%20and%20XML%20Ajax.pdf",
+    "https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/3_Advanced%20Client%20Side%20Development.pdf",
+"https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/4_Intro%20to%20Web%20App%20Security.pdf"]
         }
     ],
     "sem4": [
         {
             "file": "sem4/it4106.json",
             "code": "IT4106",
-            "name": "User Experience Design"
+            "name": "User Experience Design",
+            "essay": "true"
         },
         {
             "file": "sem4/it4206.json",
             "code": "IT4206",
-            "name": "Enterprise Application Development"
+            "name": "Enterprise Application Development",
+            "essay": "true"
         },
         {
             "file": "sem4/it4306.json",
             "code": "IT4306",
-            "name": "Information Technology Project Management"
+            "name": "Information Technology Project Management",
+            "essay": "true"
         },
         {
             "file": "sem4/it4406.json",
             "code": "IT4406",
-            "name": "Agile Software Development"
+            "name": "Agile Software Development",
+            "essay": "true"
         },
         {
             "file": "sem4/it4506.json",
             "code": "IT4506",
-            "name": "Computer Networks"
+            "name": "Computer Networks",
+            "essay": "true"
         }
     ],
     "sem5": [
         {
             "file": "sem5/en5106.json",
             "code": "EN5106",
-            "name": "Fundamentals of Management & Entrepreneurship"
+            "name": "Fundamentals of Management & Entrepreneurship",
+            "essay": "true"
         },
         {
             "file": "sem5/it5106.json",
             "code": "IT5106",
-            "name": "Software Development Project"
+            "name": "Software Development Project",
+            "essay": "true"
         },
         {
             "file": "sem5/it5206.json",
             "code": "IT5206",
-            "name": "Professional Practice"
+            "name": "Professional Practice",
+            "essay": "true"
         },
         {
             "file": "sem5/it5306.json",
             "code": "IT5306",
-            "name": "Principles of Information Security"
+            "name": "Principles of Information Security",
+            "essay": "true"
         },
         {
             "file": "sem5/it5406.json",
             "code": "IT5406",
-            "name": "Systems & Network Administration"
+            "name": "Systems & Network Administration",
+            "essay": "true"
         },
         {
             "file": "sem5/it5506.json",
             "code": "IT5506",
-            "name": "Mathematics for Computing II"
+            "name": "Mathematics for Computing II",
+            "essay": "true"
         }
     ],
     "sem6": [
         {
             "file": "sem6/en6106.json",
             "code": "EN6106",
-            "name": "Emerging Topics in Information Technology"
+            "name": "Emerging Topics in Information Technology",
+            "essay": "true"
         },
         {
             "file": "sem6/it6206.json",
             "code": "IT6206",
-            "name": "Software Quality Assurance"
+            "name": "Software Quality Assurance",
+            "essay": "true"
         },
         {
             "file": "sem6/it6306.json",
             "code": "IT6306",
-            "name": "Mobile Application Development"
+            "name": "Mobile Application Development",
+            "essay": "true"
         },
         {
             "file": "sem6/it6406.json",
             "code": "IT6406",
-            "name": "Network Security and Audit"
+            "name": "Network Security and Audit",
+            "essay": "true"
         },
         {
             "file": "sem6/it6506.json",
             "code": "IT6506",
-            "name": "e-Business Technologies"
+            "name": "e-Business Technologies",
+            "essay": "true"
         }
     ]
 }

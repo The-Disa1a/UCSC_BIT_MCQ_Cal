@@ -154,13 +154,19 @@
       </div>
 
       <div id="essay-status" class="hidden mb-4 rounded-lg border p-3 text-sm" role="status" aria-live="polite"></div>
+      <div id="essay-progress" class="hidden mb-4 rounded-lg border border-indigo-100 bg-indigo-50 p-3" role="status" aria-live="polite">
+        <p id="essay-progress-label" class="text-sm font-medium text-indigo-900">Preparing your request...</p>
+        <div class="mt-2 h-2 overflow-hidden rounded-full bg-indigo-100" role="progressbar" aria-label="Gemini marking progress" aria-valuetext="In progress">
+          <div class="essay-progress-indicator h-full w-1/3 rounded-full bg-indigo-600"></div>
+        </div>
+      </div>
 
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
         <section class="rounded-xl border bg-gray-50 overflow-hidden">
           <div class="p-4 border-b bg-white">
-            <label for="essay-paper-file" class="block text-sm font-semibold text-gray-800">Question paper PDF</label>
+            <label for="essay-paper-file" class="block text-sm font-semibold text-gray-800">Or preview a local question paper PDF</label>
             <input id="essay-paper-file" type="file" accept="application/pdf,.pdf" class="mt-2 block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100">
-            <p class="mt-1 text-xs text-gray-500">The selected PDF is shown here and sent to Gemini for question OCR.</p>
+            <p class="mt-1 text-xs text-gray-500">Local PDFs are only available in this browser session. Choose a published paper from the library to share it with students.</p>
           </div>
           <div id="essay-paper-placeholder" class="flex min-h-[65vh] items-center justify-center p-8 text-center text-sm text-gray-500">
             Choose the question paper PDF to preview it here.
@@ -170,6 +176,33 @@
 
         <section class="min-w-0">
           <div id="essay-answer-panel">
+            <details id="essay-catalog" open class="mb-5 rounded-xl border bg-gray-50 p-4">
+              <summary class="cursor-pointer font-semibold text-gray-800">Choose a published paper and course notes</summary>
+              <p class="mt-2 text-xs leading-5 text-gray-500">Select a subject and year from the paper list. Public question papers, lecturer answers, and linked syllabus notes are loaded automatically when available.</p>
+              <label for="essay-semester-select" class="mt-3 block text-sm font-medium text-gray-700">Semester</label>
+              <select id="essay-semester-select" class="mt-1 w-full rounded-lg border bg-white p-2.5 text-sm">
+                <option value="">Select a semester</option>
+                <option value="sem1">Semester 1</option>
+                <option value="sem2">Semester 2</option>
+                <option value="sem3">Semester 3</option>
+                <option value="sem4">Semester 4</option>
+                <option value="sem5">Semester 5</option>
+                <option value="sem6">Semester 6</option>
+              </select>
+              <label for="essay-subject-select" class="mt-3 block text-sm font-medium text-gray-700">Subject</label>
+              <select id="essay-subject-select" disabled class="mt-1 w-full rounded-lg border bg-white p-2.5 text-sm disabled:bg-gray-100">
+                <option value="">Select a subject</option>
+              </select>
+              <label for="essay-paper-select" class="mt-3 block text-sm font-medium text-gray-700">Year / paper</label>
+              <select id="essay-paper-select" disabled class="mt-1 w-full rounded-lg border bg-white p-2.5 text-sm disabled:bg-gray-100">
+                <option value="">Select a year</option>
+              </select>
+              <fieldset id="essay-catalog-notes" class="mt-3 hidden">
+                <legend class="text-sm font-medium text-gray-700">Syllabus notes for this subject</legend>
+                <div id="essay-catalog-note-options" class="mt-2 space-y-2"></div>
+              </fieldset>
+              <p id="essay-catalog-empty" class="mt-3 hidden text-sm text-amber-800">No essay materials are available for this selection yet. Add essay question numbers and public notes links to the paper metadata, or choose local PDFs.</p>
+            </details>
             <div class="mb-3">
               <h3 class="text-lg font-bold text-gray-900">Your answers</h3>
               <p class="text-sm text-gray-500">Add a row for each question or sub-question. Question text is optional if it is clear in the PDF.</p>
@@ -197,10 +230,10 @@
 
             <div class="mt-6 border-t pt-4">
               <h4 class="font-semibold text-gray-800">Course references</h4>
-              <label for="essay-reference-file" class="mt-3 block text-sm font-medium text-gray-700">Lecturer's answers (PDF)</label>
-              <input id="essay-reference-file" type="file" accept="application/pdf,.pdf" class="mt-1 block w-full text-sm text-gray-600">
-              <label for="essay-notes-file" class="mt-4 block text-sm font-medium text-gray-700">Subject notes (PDF or text)</label>
-              <input id="essay-notes-file" type="file" accept="application/pdf,.pdf,.txt,text/plain" class="mt-1 block w-full text-sm text-gray-600">
+              <label for="essay-reference-file" class="mt-3 block text-sm font-medium text-gray-700">Additional lecturer answer PDFs (multiple)</label>
+              <input id="essay-reference-file" type="file" accept="application/pdf,.pdf" multiple class="mt-1 block w-full text-sm text-gray-600">
+              <label for="essay-notes-file" class="mt-4 block text-sm font-medium text-gray-700">Additional subject notes PDFs or text files (multiple)</label>
+              <input id="essay-notes-file" type="file" accept="application/pdf,.pdf,.txt,text/plain" multiple class="mt-1 block w-full text-sm text-gray-600">
               <p class="mt-3 rounded-lg bg-amber-50 p-3 text-xs leading-5 text-amber-900">
                 The paper, lecturer's answers, notes, and your answers are sent to Google Gemini when you mark. Do not upload sensitive information. Free-tier data handling is subject to Google's terms.
               </p>
