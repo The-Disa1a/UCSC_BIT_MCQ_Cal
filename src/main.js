@@ -80,6 +80,7 @@ let isFocusMode = false;
 let timerMaxSeconds = 0;
 let timerSeconds = 0;
 let timerInterval = null;
+let timerDeadline = null;
 let isTimerRunning = false;
 let isTimerVisible = true;
 let hasTimerStartedOnce = false;
@@ -203,6 +204,10 @@ async function init() {
     timerDisplayContainer.style.display = isTimerVisible ? "flex" : "none";
     iconEye.classList.toggle("hidden");
     iconEyeSlash.classList.toggle("hidden");
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (isTimerRunning) updateTimerUI();
   });
 
   focusToggleBtn.addEventListener("click", toggleFocusMode);
@@ -620,25 +625,25 @@ function setupTimer(timeStr) {
 }
 
 function startTimer() {
-    if (isTimerRunning) return;
+    if (isTimerRunning || timerSeconds <= 0) return;
+    timerDeadline = Date.now() + timerSeconds * 1000;
     isTimerRunning = true;
     iconPlay.classList.add("hidden");
     iconPause.classList.remove("hidden");
-    timerInterval = setInterval(() => {
-        if (timerSeconds > 0) {
-            timerSeconds--;
-            updateTimerUI();
-        } else {
-            stopTimer();
-        }
-    }, 1000);
+    timerInterval = setInterval(updateTimerUI, 1000);
 }
 
 function stopTimer() {
+    if (isTimerRunning && timerDeadline !== null) {
+        timerSeconds = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+    }
     isTimerRunning = false;
+    timerDeadline = null;
     iconPlay.classList.remove("hidden");
     iconPause.classList.add("hidden");
     clearInterval(timerInterval);
+    timerInterval = null;
+    updateTimerUI();
 }
 
 function resetTimer() {
@@ -648,6 +653,14 @@ function resetTimer() {
 }
 
 function updateTimerUI() {
+    if (isTimerRunning && timerDeadline !== null) {
+        timerSeconds = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+        if (timerSeconds === 0) {
+            stopTimer();
+            return;
+        }
+    }
+
     const h = Math.floor(timerSeconds / 3600);
     const m = Math.floor((timerSeconds % 3600) / 60);
     const s = timerSeconds % 60;

@@ -4,7 +4,7 @@ const baseUrl = import.meta.env.BASE_URL;
 export async function fetchPapersMeta() {
     try {
         // Notice: We use baseUrl, and we DO NOT include "public/"
-        const response = await fetch(`${baseUrl}answer_sheets/papers.json`);
+        const response = await fetch(`${baseUrl}answer_sheets/papers.json`, { cache: "no-cache" });
         if (!response.ok) throw new Error("Failed to load papers.json");
         return await response.json();
     } catch (error) {
@@ -16,7 +16,7 @@ export async function fetchPapersMeta() {
 export async function fetchPaperDetails(filePath) {
     try {
         // Notice: We use baseUrl, and we DO NOT include "public/"
-        const response = await fetch(`${baseUrl}answer_sheets/${filePath}`);
+        const response = await fetch(`${baseUrl}answer_sheets/${filePath}`, { cache: "no-cache" });
         if (!response.ok) throw new Error("Failed to load paper details");
         return await response.json();
     } catch (error) {
