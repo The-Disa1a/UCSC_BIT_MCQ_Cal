@@ -93,10 +93,7 @@
             "code": "IT3406",
             "name": "Web Application Development II",
             "essay": "true",
-            "notes": ["https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/1_Server%20Side%20Web%20Dev%20using%20PHP%20MYSQL.pdf",
-        "https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/2_Fundamentals%20of%20Asynchronous%20JS%20and%20XML%20Ajax.pdf",
-    "https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/3_Advanced%20Client%20Side%20Development.pdf",
-"https://github.com/The-Disa1a/UCSC-BIT-Notes/blob/main/BIT/Semester%203/Web%20Application%20Development%202/Notes_New_Syllabus/4_Intro%20to%20Web%20App%20Security.pdf"]
+            "notes": ["public/llm_help/IT3406-Web Application Development II/1_Server Side Web Dev using PHP MYSQL.pdf", "public/llm_help/IT3406-Web Application Development II/2_Fundamentals of Asynchronous JS and XML Ajax.pdf", "public/llm_help/IT3406-Web Application Development II/3_Advanced Client Side Development.pdf", "public/llm_help/IT3406-Web Application Development II/4_Intro to Web App Security.pdf"]
         }
     ],
     "sem4": [

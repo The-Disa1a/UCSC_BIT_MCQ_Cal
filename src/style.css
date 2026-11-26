@@ -18,3 +18,348 @@
     animation-duration: 3s;
   }
 }
+
+.essay-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  width: 100%;
+}
+
+.essay-paper-panel {
+  grid-column: 1;
+  width: min(100%, 70vw);
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.essay-tools-panel {
+  grid-column: 3;
+  position: sticky;
+  top: 1rem;
+}
+
+.essay-pdf-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 8px 12px;
+}
+
+.essay-pdf-toolbar-controls {
+  width: 100%;
+}
+
+.essay-viewer-button {
+  display: inline-flex;
+  min-width: 32px;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 4px 8px;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.essay-viewer-button.hidden {
+  display: none;
+}
+
+.essay-viewer-button:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.essay-viewer-button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.essay-pdf-scroll {
+  height: min(78vh, 920px);
+  min-height: 420px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #e5e7eb;
+  padding: 16px;
+}
+
+.essay-pdf-page {
+  position: relative;
+  max-width: none;
+  margin: 0 auto 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 18%);
+}
+
+.essay-pdf-page canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.essay-pdf-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.essay-overlay-item {
+  position: absolute;
+  display: flex;
+  min-width: 48px;
+  min-height: 36px;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px dashed #4f46e5;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 88%);
+  pointer-events: auto;
+}
+
+.essay-overlay-toolbar {
+  display: flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 1px 4px;
+  background: #eef2ff;
+  color: #3730a3;
+  font: 10px/1.2 sans-serif;
+}
+
+.essay-overlay-drag {
+  flex: 1;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.essay-overlay-drag:active {
+  cursor: grabbing;
+}
+
+.essay-overlay-remove {
+  padding: 2px 4px;
+  border-radius: 3px;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.essay-overlay-remove:hover {
+  background: #fee2e2;
+}
+
+.essay-overlay-text {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  resize: none;
+  border: 0;
+  background: transparent;
+  padding: 4px;
+  color: #111827;
+  font: 14px/1.35 Arial, sans-serif;
+  outline: none;
+}
+
+.essay-overlay-image {
+  min-height: 0;
+  width: 100%;
+  flex: 1;
+  object-fit: fill;
+  user-select: none;
+}
+
+.essay-overlay-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+.essay-overlay-resize::after {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid #4338ca;
+  border-bottom: 2px solid #4338ca;
+  content: "";
+}
+
+.essay-viewer-resize {
+  display: none;
+  grid-column: 2;
+  align-self: stretch;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.essay-viewer-resize::after {
+  display: block;
+  width: 4px;
+  height: 100%;
+  min-height: 200px;
+  margin: auto;
+  border-radius: 4px;
+  background: #d1d5db;
+  content: "";
+}
+
+.essay-viewer-resize:hover::after {
+  background: #6366f1;
+}
+
+.essay-layout.essay-developer-mode {
+  grid-template-columns: minmax(0, 8fr) 8px minmax(220px, 2fr);
+}
+
+.essay-layout.essay-developer-mode .essay-paper-panel {
+  width: auto;
+  margin-inline: 0;
+}
+
+.essay-layout.essay-developer-mode .essay-viewer-resize {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .essay-layout,
+  .essay-layout.essay-developer-mode {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .essay-paper-panel,
+  .essay-tools-panel {
+    grid-column: 1;
+  }
+
+  .essay-layout .essay-paper-panel {
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  .essay-tools-panel {
+    position: static;
+  }
+
+  #essay-viewer-resize {
+    display: none;
+  }
+
+  .essay-pdf-toolbar-controls {
+    gap: 6px;
+  }
+
+  .essay-pdf-scroll {
+    height: 68vh;
+    min-height: 320px;
+    padding: 10px;
+  }
+}
+
+html[data-theme="dark"] body {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] #app,
+html[data-theme="dark"] .bg-white {
+  border-color: #374151;
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .bg-gray-50,
+html[data-theme="dark"] .bg-gray-100 {
+  background-color: #1f2937;
+}
+
+html[data-theme="dark"] .bg-gray-200 {
+  background-color: #374151;
+}
+
+html[data-theme="dark"] .text-gray-900,
+html[data-theme="dark"] .text-gray-800 {
+  color: #f3f4f6;
+}
+
+html[data-theme="dark"] .text-gray-700,
+html[data-theme="dark"] .text-gray-600,
+html[data-theme="dark"] .text-gray-500 {
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .border,
+html[data-theme="dark"] .border-t,
+html[data-theme="dark"] .border-b,
+html[data-theme="dark"] .border-gray-100,
+html[data-theme="dark"] .border-gray-200,
+html[data-theme="dark"] .border-gray-300 {
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] input:not(.essay-overlay-text),
+html[data-theme="dark"] textarea:not(.essay-overlay-text),
+html[data-theme="dark"] select,
+html[data-theme="dark"] .essay-viewer-button {
+  border-color: #4b5563;
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+html[data-theme="dark"] .essay-pdf-toolbar {
+  border-color: #374151;
+  background-color: #1f2937;
+}
+
+html[data-theme="dark"] .essay-pdf-scroll {
+  background-color: #374151;
+}
+
+html[data-theme="dark"] .essay-pdf-page {
+  background-color: #fff;
+}
+
+html[data-theme="dark"] .essay-overlay-item,
+html[data-theme="dark"] .essay-overlay-text {
+  background-color: rgb(255 255 255 / 92%);
+  color: #111827;
+}
+
+html[data-theme="dark"] .bg-indigo-50,
+html[data-theme="dark"] .bg-blue-50,
+html[data-theme="dark"] .bg-green-50,
+html[data-theme="dark"] .bg-red-50,
+html[data-theme="dark"] .bg-yellow-50 {
+  background-color: #273449;
+}
+
+html[data-theme="dark"] #essay-dev-details {
+  border-color: #a16207;
+  background-color: #422006;
+  color: #fef3c7;
+}
+
+html[data-theme="dark"] #essay-dev-details h3,
+html[data-theme="dark"] #essay-dev-details pre {
+  color: #fef3c7;
+}

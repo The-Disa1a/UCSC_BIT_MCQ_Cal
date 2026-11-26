@@ -90,6 +90,7 @@ async function init() {
   if (!papersData) return alert("Failed to load metadata!");
 
   semesterSelect.addEventListener("change", (e) => {
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", { detail: null }));
     if(e.target.value === "custom") {
         loadCustomPapersSubject();
     } else {
@@ -98,6 +99,7 @@ async function init() {
   });
   
   subjectSelect.addEventListener("change", async (e) => {
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", { detail: null }));
     if(semesterSelect.value === "custom") {
         currentPaperData = getCustomPapers();
         populateYears();
@@ -114,6 +116,27 @@ async function init() {
   yearSelect.addEventListener("change", (e) => {
     const yearData = currentPaperData[e.target.value];
     renderQuestions(yearData);
+    const subjects = papersData[semesterSelect.value] || [];
+    const selectedSubject = subjects.find(subject => subject.file === subjectSelect.value);
+    const subjectSupportsEssay = selectedSubject
+      && (selectedSubject.essay === true || selectedSubject.essay === "true");
+    const essayData = yearData && yearData.essay;
+    const hasEssayQuestions = essayData === true || essayData === "true"
+      || (Array.isArray(essayData) && essayData.length > 0)
+      || (essayData && typeof essayData === "object" && Object.keys(essayData).length > 0)
+      || (typeof essayData === "string" && !["true", "false"].includes(essayData.toLowerCase()));
+    const hasLecturerAnswers = yearData
+      && (yearData.lect_ans || yearData.lectureAnswers || yearData.answerPdf);
+    const yearSupportsEssay = hasEssayQuestions || hasLecturerAnswers;
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", {
+      detail: subjectSupportsEssay && yearSupportsEssay
+        ? {
+          subjectFile: subjectSelect.value,
+          year: e.target.value,
+          yearData
+        }
+        : null
+    }));
   });
 
   questionsContainer.addEventListener("change", () => {
@@ -133,10 +156,7 @@ async function init() {
       yearSelect.disabled = true;
       changePaperBtn.classList.remove("hidden");
 
-      if(!hasTimerStartedOnce && timerMaxSeconds > 0) {
-          startTimer();
-          hasTimerStartedOnce = true;
-      }
+      startTimerOnFirstActivity();
 
       // Task 1: Auto Focus Mode ONLY on mobile (< 768px)
       if (window.innerWidth < 768 && !isFocusMode) {
@@ -147,6 +167,7 @@ async function init() {
   });
 
   changePaperBtn.addEventListener("click", () => {
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", { detail: null }));
     paperActive = false;
     semesterSelect.disabled = false;
     subjectSelect.disabled = false;
@@ -209,6 +230,7 @@ async function init() {
   document.addEventListener("visibilitychange", () => {
     if (isTimerRunning) updateTimerUI();
   });
+  window.addEventListener("essay-timer-start", startTimerOnFirstActivity);
 
   focusToggleBtn.addEventListener("click", toggleFocusMode);
 
@@ -622,6 +644,12 @@ function setupTimer(timeStr) {
     timerSeconds = timerMaxSeconds;
     updateTimerUI(); 
     timerWrapper.classList.remove("hidden");
+}
+
+function startTimerOnFirstActivity() {
+    if (hasTimerStartedOnce || timerMaxSeconds <= 0) return;
+    startTimer();
+    hasTimerStartedOnce = true;
 }
 
 function startTimer() {

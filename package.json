@@ -14,5 +14,9 @@
     "postcss": "^8.5.10",
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.9"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.5.438"
   }
 }

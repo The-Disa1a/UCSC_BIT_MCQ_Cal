@@ -14,11 +14,11 @@ Studying for UCSC BIT exams involves a lot of past paper practice. Manually calc
 -  Instantly grade your performance on official past papers.
 -  Simulate exam conditions with a built-in timer.
 -  Create and save your own custom answer sheets for mock exams or study sessions.
--  View an essay question paper PDF beside numbered answer fields and request integer marks from Gemini.
+- View every essay question-paper page inline, place movable/resizable answer text and image overlays on the pages, and request marks from Gemini. Unanswered questions are allowed and receive zero; the paper is marked out of 50.
 
-The MCQ calculator and custom papers run in your browser. Essay marking sends the selected question paper, lecturer answer PDF, subject notes, and student answers to Google's Gemini API using the user's own API key. Do not submit sensitive information; Gemini's terms and data handling apply.
+The MCQ calculator and custom papers run in your browser. Essay marking sends a flattened question-paper PDF with selectable typed-answer text and visible image overlays, catalog-linked lecturer answer PDFs, and subject notes to Google's Gemini API using the user's own API key. Do not submit sensitive information; Gemini's terms and data handling apply.
 
-Essay practice uses the existing `public/answer_sheets/papers.json` subject list and each subject's paper JSON. Mark essay-enabled subjects with `"essay": true` (the current string values `"true"` and `"false"` are also supported). Add shared notes as HTTPS URLs in the subject's `notes` array; GitHub `blob` links are converted to raw-file links when fetched. Only link materials you have permission to share.
+Essay practice appears below the MCQ questions when the selected subject is essay-enabled and the selected year contains essay questions or lecturer-answer metadata. It uses the existing `public/answer_sheets/papers.json` subject list and each subject's paper JSON. Mark essay-enabled subjects with `"essay": true` (the current string values `"true"` and `"false"` are also supported). Add shared notes as HTTPS URLs or `public/` paths in the subject's `notes` array; GitHub `blob` links are converted to raw-file links when fetched. Add lecturer answers with the year-level `lect_ans`, `answerPdf`, or `lectureAnswers` property. When an answer PDF uses the `_Ans.pdf` suffix, the matching question paper is loaded from its sibling path if available. Only link materials you have permission to share.
 
 Add an `essay` property to each year that has essay questions. It can be a flat list of complete labels, which is the preferred format when only question numbers are needed:
 
@@ -30,7 +30,7 @@ Add an `essay` property to each year that has essay questions. It can be a flat 
 }
 ```
 
-Nested question structures are also supported for existing data. A year may optionally include `paperPdf` (or `questionPaperPdf` / `questionPaper`) and `answerPdf` (or `lectureAnswers`) URLs to load the question paper and lecturer reference automatically. Students can instead choose local PDFs, and can add multiple local lecturer-answer PDFs or notes files in Settings.
+Nested question structures are also supported for existing data. A year may use an `essay` PDF path to load the question paper directly, or optionally include `paperPdf` (or `questionPaperPdf` / `questionPaper`). `lect_ans` (or `answerPdf` / `lectureAnswers`) identifies the lecturer reference PDFs. Notes and lecturer answers are loaded automatically from catalog metadata.
 
 ---
 
@@ -40,9 +40,12 @@ Nested question structures are also supported for existing data. A year may opti
 - **Instant Grading & Analysis:** Get your final score, university-standard letter grade (A+, B-, E, etc.), and a detailed breakdown of your performance (Full Marks, Partial Marks, Wrong).
 - **📝 Custom Paper Builder:** An advanced tool to create your own answer sheets! Define the question count, answer type, time limit, and even add official comments.
 - **💾 Local Storage:** Your custom-built papers are saved directly in your browser, ready to use anytime.
-- **📝 Essay Practice (early version):** Preview a question paper PDF next to numbered answer fields, then request structured integer marks from Gemini 3.1 Flash-Lite. The lecturer's answer is a reference example, not an exact-match key.
+- **📝 Essay Practice:** When a selected paper includes essays, read the centered, independently scrolling viewer (70% default zoom), add and resize text boxes or image overlays around the visible page area, and request structured marks from Gemini. The question-paper pages are flattened first, then typed answers are added as selectable PDF text and images as visual overlays. Gemini is instructed to inspect every page image as well as read the selectable answers, since OCR can miss handwriting and diagrams. Papers with a configured `essay.total_marks` are normalized to a score out of 50. Unanswered questions are allowed; the lecturer's answer is a reference example, not an exact-match key.
+- **🤖 Gemini Model Controls:** Load the models available to the supplied API key, choose a model, and select a thinking level where the model supports it. The model and thinking preferences are stored in the browser; the API key remains separately encrypted or session-only.
+- **🛠️ Developer Mode:** Essay settings can enable Gemini request details, detailed marking diagnostics, and a download of the stitched PDF sent to Gemini.
+- **🌓 Light and Dark Themes:** Switch between light and dark appearance; the default is light.
 - **🔐 User-provided Gemini key:** The key can be encrypted and saved in the current browser, or used for one session without saving.
-- **⏱️ Live Exam Timer:** Practice under pressure with a fully functional timer (`HH:MM:SS`) that starts when you make your first selection. Includes pause, reset, and hide controls.
+- **⏱️ Live Exam Timer:** Practice under pressure with a fully functional timer (`HH:MM:SS`) that starts with your first MCQ answer or when you scroll the essay PDF. Includes pause, reset, and hide controls.
 - **📱 Fully Responsive Design:** The interface adapts beautifully from large desktop monitors to mobile phones, with a unique vertical-column layout for easy scanning.
 - **Interactive UI:**
     -  Clean, modern bubble-style inputs.
