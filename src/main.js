@@ -19,6 +19,11 @@ const commentsText = document.getElementById("comments-text");
 const toastPopup = document.getElementById("toast-popup");
 const toastMessage = document.getElementById("toast-message");
 const layoutWrapper = document.getElementById("layout-wrapper");
+const mcqQuestionPanel = document.getElementById("mcq-question-panel");
+const mcqPaperPanel = document.getElementById("mcq-paper-panel");
+const mcqPaperFrame = document.getElementById("mcq-paper-frame");
+const mcqPaperResize = document.getElementById("mcq-paper-resize");
+const getGradeBtn = document.getElementById("get-grade-btn");
 
 // Focus Mode DOM Elements
 const focusToggleBtn = document.getElementById("focus-toggle-btn");
@@ -70,6 +75,11 @@ const mdColClasses = {
 // State Variables
 let papersData = null;
 let currentPaperData = null;
+let currentYearData = null;
+let mcqScoreResult = null;
+let mcqAnswerKeyComplete = false;
+let essayScoreResult = null;
+let hasEssayActivity = false;
 let isMultiGlobal = false;
 let paperActive = false; 
 let toastTimeout = null;
@@ -80,6 +90,7 @@ let isFocusMode = false;
 let timerMaxSeconds = 0;
 let timerSeconds = 0;
 let timerInterval = null;
+let timerDeadline = null;
 let isTimerRunning = false;
 let isTimerVisible = true;
 let hasTimerStartedOnce = false;
@@ -89,6 +100,10 @@ async function init() {
   if (!papersData) return alert("Failed to load metadata!");
 
   semesterSelect.addEventListener("change", (e) => {
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", { detail: null }));
+    hasEssayActivity = false;
+    essayScoreResult = null;
+    updateGradeButton();
     if(e.target.value === "custom") {
         loadCustomPapersSubject();
     } else {
@@ -97,6 +112,10 @@ async function init() {
   });
   
   subjectSelect.addEventListener("change", async (e) => {
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", { detail: null }));
+    hasEssayActivity = false;
+    essayScoreResult = null;
+    updateGradeButton();
     if(semesterSelect.value === "custom") {
         currentPaperData = getCustomPapers();
         populateYears();
@@ -112,10 +131,41 @@ async function init() {
 
   yearSelect.addEventListener("change", (e) => {
     const yearData = currentPaperData[e.target.value];
+    currentYearData = yearData;
+    mcqScoreResult = null;
+    mcqAnswerKeyComplete = false;
+    essayScoreResult = null;
+    hasEssayActivity = false;
     renderQuestions(yearData);
+    renderMcqPaper(yearData);
+    updateGradeButton();
+    const subjects = papersData[semesterSelect.value] || [];
+    const selectedSubject = subjects.find(subject => subject.file === subjectSelect.value);
+    const subjectSupportsEssay = selectedSubject
+      && (selectedSubject.essay === true || selectedSubject.essay === "true");
+    const essayPart = yearData && yearData.part_2;
+    const essayData = essayPart ? essayPart.essay : yearData && yearData.essay;
+    const hasEssayQuestions = essayData === true || essayData === "true"
+      || (Array.isArray(essayData) && essayData.length > 0)
+      || (essayData && typeof essayData === "object" && Object.keys(essayData).length > 0)
+      || (typeof essayData === "string" && !["true", "false"].includes(essayData.toLowerCase()));
+    const hasLecturerAnswers = essayPart
+      ? Boolean(essayPart.lect_ans || essayPart.lectureAnswers || essayPart.answerPdf || essayPart.paper)
+      : yearData && (yearData.lect_ans || yearData.lectureAnswers || yearData.answerPdf);
+    const yearSupportsEssay = Boolean(essayPart) || hasEssayQuestions || hasLecturerAnswers;
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", {
+      detail: subjectSupportsEssay && yearSupportsEssay
+        ? {
+          subjectFile: subjectSelect.value,
+          year: e.target.value,
+          yearData
+        }
+        : null
+    }));
   });
 
   questionsContainer.addEventListener("change", () => {
+    updateGradeButton();
     if (!paperActive) {
       paperActive = true;
       
@@ -132,10 +182,7 @@ async function init() {
       yearSelect.disabled = true;
       changePaperBtn.classList.remove("hidden");
 
-      if(!hasTimerStartedOnce && timerMaxSeconds > 0) {
-          startTimer();
-          hasTimerStartedOnce = true;
-      }
+      startTimerOnFirstActivity();
 
       // Task 1: Auto Focus Mode ONLY on mobile (< 768px)
       if (window.innerWidth < 768 && !isFocusMode) {
@@ -146,7 +193,15 @@ async function init() {
   });
 
   changePaperBtn.addEventListener("click", () => {
+    window.dispatchEvent(new CustomEvent("essay-paper-selection", { detail: null }));
     paperActive = false;
+    currentYearData = null;
+    mcqScoreResult = null;
+    mcqAnswerKeyComplete = false;
+    essayScoreResult = null;
+    hasEssayActivity = false;
+    renderMcqPaper(null);
+    updateGradeButton();
     semesterSelect.disabled = false;
     subjectSelect.disabled = false;
     yearSelect.disabled = false;
@@ -179,6 +234,12 @@ async function init() {
     
     resetTimer();
     hasTimerStartedOnce = false; 
+    mcqScoreResult = null;
+    mcqAnswerKeyComplete = false;
+    essayScoreResult = null;
+    hasEssayActivity = false;
+    window.dispatchEvent(new Event("essay-reset-results"));
+    updateGradeButton();
 
     // Auto Focus trigger specifically for Mobile on Retest
     if (window.innerWidth < 768 && !isFocusMode) {
@@ -205,16 +266,57 @@ async function init() {
     iconEyeSlash.classList.toggle("hidden");
   });
 
+  document.addEventListener("visibilitychange", () => {
+    if (isTimerRunning) updateTimerUI();
+  });
+  window.addEventListener("essay-timer-start", startTimerOnFirstActivity);
+  window.addEventListener("essay-timer-stop", stopTimer);
+  window.addEventListener("essay-part-activity", () => {
+    hasEssayActivity = true;
+    updateGradeButton();
+  });
+  window.addEventListener("essay-results-ready", event => {
+    essayScoreResult = Number(event.detail);
+    updateGradeButton();
+  });
+  window.addEventListener("essay-results-cleared", () => {
+    essayScoreResult = null;
+    updateGradeButton();
+  });
+  window.addEventListener("mcq-pdf-viewer-disabled", event => {
+    document.getElementById("mcq-pdf-disabled").checked = event.detail;
+    if (currentYearData) renderMcqPaper(currentYearData);
+  });
+
   focusToggleBtn.addEventListener("click", toggleFocusMode);
+  try {
+    document.getElementById("mcq-pdf-disabled").checked =
+      localStorage.getItem("mcq-pdf-disabled") === "true";
+  } catch (error) {
+    showToastMessage(`Viewer preference could not be read: ${error.message}`);
+  }
 
   submitBtn.addEventListener("click", () => {
+    stopTimer();
     if (isFocusMode) toggleFocusMode();
     focusToggleBtn.classList.add("hidden");
 
     const selectedYear = yearSelect.value;
     const yearData = currentPaperData[selectedYear];
-    const correctAnswers = yearData.questions;
-    const totalQuestions = yearData.qcount;
+    const part1Data = getPart1Data(yearData);
+    const correctAnswers = part1Data.questions || {};
+    const totalQuestions = part1Data.qcount;
+    const knownAnswerCount = Array.from({ length: totalQuestions }, (_, index) => correctAnswers[String(index + 1)])
+      .filter(answers => Array.isArray(answers) && answers.length > 0).length;
+    if (knownAnswerCount === 0) {
+      showToastMessage("This paper's answer key has not been added yet.");
+      return;
+    }
+    mcqAnswerKeyComplete = knownAnswerCount === totalQuestions;
+    if (!mcqAnswerKeyComplete) {
+      showToastMessage("Only verified answer-key questions were scored. The combined grade needs a complete MCQ key.");
+    }
+    const availableMarks = Number((parseFloat(part1Data.total_marks || 100) * knownAnswerCount / totalQuestions).toFixed(2));
     
     let missedQs =[];
     for (let i = 1; i <= totalQuestions; i++) {
@@ -228,8 +330,8 @@ async function init() {
     allInputs.forEach(inp => inp.disabled = true);
     submitBtn.classList.add("hidden");
 
-    const totalMarks = parseFloat(yearData.total_marks) || 100;
-    const Q_MAX = totalMarks / totalQuestions; 
+    const totalMarks = parseFloat(part1Data.total_marks) || 100;
+    const Q_MAX = totalMarks / totalQuestions;
     let totalScore = 0;
     
     let fullCount = 0, wrongCount = 0, partialBreakdown =[];
@@ -249,7 +351,7 @@ async function init() {
           }
       }
 
-      if (!correctAns) continue; 
+      if (!Array.isArray(correctAns) || correctAns.length === 0) continue;
 
       let qScore = 0;
       let isPerfect = false;
@@ -347,8 +449,9 @@ async function init() {
     }
 
     const finalRoundedScore = parseFloat(totalScore.toFixed(2));
+    mcqScoreResult = finalRoundedScore;
     
-    if (totalMarks === 100) {
+    if (totalMarks === 100 && !yearData.part_2) {
         const gradeInfo = getGradeInfo(finalRoundedScore);
         gradeDisplay.classList.remove("hidden");
         gradeDisplay.textContent = gradeInfo.letter;
@@ -358,7 +461,7 @@ async function init() {
         scoreContainer.className = "text-xl text-gray-600 mt-2 font-medium";
     } else {
         gradeDisplay.classList.add("hidden");
-        scoreDisplay.textContent = `${finalRoundedScore} / ${totalMarks}`;
+        scoreDisplay.textContent = `${finalRoundedScore} / ${availableMarks}`;
         scoreContainer.className = "text-5xl font-black text-blue-600 mt-4";
     }
     
@@ -378,12 +481,62 @@ async function init() {
 
     resultsBox.classList.remove("hidden");
     resultsBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    stopTimer();
+    updateGradeButton();
 
-    if (yearData.comments) {
-        commentsText.textContent = yearData.comments;
+    if (part1Data.comments) {
+        commentsText.textContent = part1Data.comments;
         commentsBox.classList.remove("hidden");
     }
+  });
+
+  getGradeBtn.addEventListener("click", () => {
+    if (mcqScoreResult === null || essayScoreResult === null) return;
+    const combinedScore = Number((mcqScoreResult + essayScoreResult).toFixed(2));
+    const gradeInfo = getGradeInfo(combinedScore);
+    resultsBox.classList.remove("hidden");
+    gradeDisplay.classList.remove("hidden");
+    gradeDisplay.textContent = gradeInfo.letter;
+    gradeDisplay.className = `text-7xl font-black mt-2 drop-shadow-sm ${gradeInfo.color}`;
+    scoreDisplay.textContent = `${combinedScore}% (MCQ ${mcqScoreResult} + essay ${essayScoreResult})`;
+    scoreContainer.className = "text-xl text-gray-600 mt-2 font-medium";
+    resultsBox.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  mcqPaperResize.addEventListener("pointerdown", event => {
+    if (window.innerWidth < 768 || mcqPaperPanel.classList.contains("hidden")) return;
+    event.preventDefault();
+    const bounds = layoutWrapper.getBoundingClientRect();
+    const startSide = layoutWrapper.dataset.paperSide || "right";
+    mcqPaperResize.setPointerCapture(event.pointerId);
+    const onMove = moveEvent => {
+      const ratio = Math.min(75, Math.max(25, (moveEvent.clientX - bounds.left) / bounds.width * 100));
+      layoutWrapper.dataset.paperSplit = String(ratio);
+      if (startSide === "right" && moveEvent.clientX < bounds.left + bounds.width * 0.35) {
+        layoutWrapper.dataset.paperSide = "left";
+        layoutWrapper.classList.add("mcq-paper-left");
+      } else if (startSide === "left" && moveEvent.clientX > bounds.left + bounds.width * 0.65) {
+        layoutWrapper.dataset.paperSide = "right";
+        layoutWrapper.classList.remove("mcq-paper-left");
+      }
+      layoutWrapper.style.gridTemplateColumns = `minmax(0, ${ratio}fr) 8px minmax(320px, ${100 - ratio}fr)`;
+    };
+    const stop = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", stop, { once: true });
+    window.addEventListener("pointercancel", stop, { once: true });
+  });
+
+  document.getElementById("mcq-pdf-disabled").addEventListener("change", event => {
+    try {
+      localStorage.setItem("mcq-pdf-disabled", String(event.target.checked));
+    } catch (error) {
+      showToastMessage(`Viewer preference could not be saved: ${error.message}`);
+    }
+    if (currentYearData) renderMcqPaper(currentYearData);
   });
 
   setupBuilder();
@@ -603,6 +756,15 @@ function showToast(missedArr) {
     }, 5000);
 }
 
+function showToastMessage(message) {
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastMessage.textContent = message;
+    toastPopup.classList.remove("translate-x-[150%]");
+    toastTimeout = setTimeout(() => {
+        toastPopup.classList.add("translate-x-[150%]");
+    }, 5000);
+}
+
 function setupTimer(timeStr) {
     stopTimer();
     hasTimerStartedOnce = false; 
@@ -619,26 +781,82 @@ function setupTimer(timeStr) {
     timerWrapper.classList.remove("hidden");
 }
 
+function getPart1Data(yearData) {
+    return yearData && yearData.part_1 ? yearData.part_1 : yearData;
+}
+
+function renderMcqPaper(yearData) {
+    const disabled = document.getElementById("mcq-pdf-disabled").checked;
+    const part1 = yearData && getPart1Data(yearData);
+    const paperPath = part1 && part1.paper;
+    const showViewer = !disabled && typeof paperPath === "string" && paperPath.trim();
+    mcqPaperPanel.classList.toggle("hidden", !showViewer);
+    mcqPaperResize.classList.toggle("hidden", !showViewer);
+    if (!showViewer) {
+        mcqPaperFrame.removeAttribute("src");
+        layoutWrapper.classList.remove("mcq-paper-active", "mcq-paper-left");
+        layoutWrapper.style.gridTemplateColumns = "";
+        delete layoutWrapper.dataset.paperSplit;
+        delete layoutWrapper.dataset.paperSide;
+        mcqQuestionPanel.style.gridColumn = "";
+        return;
+    }
+
+    const segments = paperPath.replace(/^public[\\/]/i, "").split(/[\\/]/);
+    if (segments.some(segment => !segment || segment === "." || segment === "..")) {
+        showToastMessage("The MCQ question paper path is invalid.");
+        return;
+    }
+    const paperUrl = `${import.meta.env.BASE_URL}${segments.map(encodeURIComponent).join("/")}`;
+    if (mcqPaperFrame.getAttribute("src") !== paperUrl) {
+        mcqPaperFrame.src = paperUrl;
+    }
+    layoutWrapper.classList.add("mcq-paper-active");
+    layoutWrapper.classList.remove("mcq-paper-left");
+    layoutWrapper.dataset.paperSide = "right";
+    layoutWrapper.dataset.paperSplit = "56";
+    layoutWrapper.style.gridTemplateColumns = "minmax(0, 56fr) 8px minmax(320px, 44fr)";
+}
+
+function updateGradeButton() {
+    const hasDualExam = Boolean(currentYearData && currentYearData.part_1 && currentYearData.part_2);
+    const hasMcqAttempt = Boolean(questionsContainer.querySelector('input:checked'));
+    const showButton = hasDualExam
+      && hasMcqAttempt
+      && hasEssayActivity
+      && mcqAnswerKeyComplete
+      && mcqScoreResult !== null
+      && essayScoreResult !== null;
+    getGradeBtn.classList.toggle("hidden", !showButton);
+    getGradeBtn.disabled = false;
+}
+
+function startTimerOnFirstActivity() {
+    if (hasTimerStartedOnce || timerMaxSeconds <= 0) return;
+    startTimer();
+    hasTimerStartedOnce = true;
+}
+
 function startTimer() {
-    if (isTimerRunning) return;
+    if (isTimerRunning || timerSeconds <= 0) return;
+    timerDeadline = Date.now() + timerSeconds * 1000;
     isTimerRunning = true;
     iconPlay.classList.add("hidden");
     iconPause.classList.remove("hidden");
-    timerInterval = setInterval(() => {
-        if (timerSeconds > 0) {
-            timerSeconds--;
-            updateTimerUI();
-        } else {
-            stopTimer();
-        }
-    }, 1000);
+    timerInterval = setInterval(updateTimerUI, 1000);
 }
 
 function stopTimer() {
+    if (isTimerRunning && timerDeadline !== null) {
+        timerSeconds = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+    }
     isTimerRunning = false;
+    timerDeadline = null;
     iconPlay.classList.remove("hidden");
     iconPause.classList.add("hidden");
     clearInterval(timerInterval);
+    timerInterval = null;
+    updateTimerUI();
 }
 
 function resetTimer() {
@@ -648,6 +866,14 @@ function resetTimer() {
 }
 
 function updateTimerUI() {
+    if (isTimerRunning && timerDeadline !== null) {
+        timerSeconds = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+        if (timerSeconds === 0) {
+            stopTimer();
+            return;
+        }
+    }
+
     const h = Math.floor(timerSeconds / 3600);
     const m = Math.floor((timerSeconds % 3600) / 60);
     const s = timerSeconds % 60;
@@ -703,14 +929,24 @@ function renderQuestions(yearData) {
       isEnhancementCourse = fileName.startsWith('en');
   }
 
-  isMultiGlobal = yearData.answerType === "multi";
+  const part1Data = getPart1Data(yearData);
+  if (!part1Data || !Number.isInteger(Number(part1Data.qcount)) || Number(part1Data.qcount) <= 0) {
+    paperTypeBadge.textContent = "Essay";
+    paperTypeBadge.classList.remove("hidden");
+    setupTimer(yearData.time);
+    questionsContainer.classList.add("hidden");
+    actionContainer.classList.add("hidden");
+    submitBtn.classList.add("hidden");
+    return;
+  }
+  isMultiGlobal = part1Data.answerType === "multi";
   
-  paperTypeBadge.textContent = isMultiGlobal ? "Multi Answer (Negative Marks)" : "Single Answer";
+  paperTypeBadge.textContent = `${isMultiGlobal ? "Multi Answer (−)" : "Single Answer"}${yearData.part_2 ? " · Essay" : ""}`;
   paperTypeBadge.classList.remove("hidden");
 
   setupTimer(yearData.time);
 
-  const totalQuestions = yearData.qcount;
+  const totalQuestions = part1Data.qcount;
 
   // Task 1: Responsive Math for Perfect CSS Columns
   let mCols = 2;
