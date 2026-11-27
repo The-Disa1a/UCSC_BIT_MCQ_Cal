@@ -1,11 +1,26 @@
 {
-    "Updating...": {
-        "total_marks": 50,
-        "comments" : "* Answer key will be added soon. You can contribute by JSON format. \n* Repo : https://github.com/The-Disa1a/UCSC_BIT_MCQ_Cal \n* Clone it and build answer_sheets using public/template.json and make a PR. \n* Or just use 'Build a custom answer sheet' option until we add the answer key.", 
-        "time" : "1H", 
-        "answerType": "multi", 
-        "qcount": 25,
-        "questions": {
-        }
+  "2022": {
+    "time": "2H",
+    "part_2": {
+      "total_marks": 100,
+      "lect_ans": "public/notes_papers/20-25sy/sem6/IT6306/PP/IT6306_2022_Ans.pdf",
+      "paper": "public/notes_papers/20-25sy/sem6/IT6306/PP/IT6306_2022.pdf"
     }
+  },
+  "2023": {
+    "time": "2H",
+    "part_2": {
+      "total_marks": 100,
+      "lect_ans": "public/notes_papers/20-25sy/sem6/IT6306/PP/IT6306_2023_Ans.pdf",
+      "paper": "public/notes_papers/20-25sy/sem6/IT6306/PP/IT6306_2023.pdf"
+    }
+  },
+  "2024": {
+    "time": "2H",
+    "part_2": {
+      "total_marks": 100,
+      "lect_ans": "public/notes_papers/20-25sy/sem6/IT6306/PP/IT6306-Answers_2024.pdf",
+      "paper": "public/notes_papers/20-25sy/sem6/IT6306/PP/IT 6306_2024.pdf"
+    }
+  }
 }

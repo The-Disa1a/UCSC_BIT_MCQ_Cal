@@ -1,11 +1,124 @@
 {
-    "Updating...": {
-        "total_marks": 50,
-        "comments" : "* Answer key will be added soon. You can contribute by JSON format. \n* Repo : https://github.com/The-Disa1a/UCSC_BIT_MCQ_Cal \n* Clone it and build answer_sheets using public/template.json and make a PR. \n* Or just use 'Build a custom answer sheet' option until we add the answer key.", 
-        "time" : "1H", 
-        "answerType": "multi", 
-        "qcount": 25,
-        "questions": {
-        }
+  "2022": {
+    "time": "2H",
+    "part_1": {
+      "total_marks": 50,
+      "comments": "Answer key pending; add verified choices for the numbered questions.",
+      "answerType": "multi",
+      "qcount": 25,
+      "questions": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": [],
+        "12": [],
+        "13": [],
+        "14": [],
+        "15": [],
+        "16": [],
+        "17": [],
+        "18": [],
+        "19": [],
+        "20": [],
+        "21": [],
+        "22": [],
+        "23": [],
+        "24": [],
+        "25": []
+      }
+    },
+    "part_2": {
+      "total_marks": 100,
+      "lect_ans": "public/notes_papers/20-25sy/sem5/IT5206/PP/IT5206_2022_Ans.pdf",
+      "paper": "public/notes_papers/20-25sy/sem5/IT5206/PP/IT5206_2022.pdf"
     }
+  },
+  "2023": {
+    "time": "2H",
+    "part_1": {
+      "total_marks": 50,
+      "comments": "Answer key pending; add verified choices for the numbered questions.",
+      "answerType": "multi",
+      "qcount": 25,
+      "questions": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": [],
+        "12": [],
+        "13": [],
+        "14": [],
+        "15": [],
+        "16": [],
+        "17": [],
+        "18": [],
+        "19": [],
+        "20": [],
+        "21": [],
+        "22": [],
+        "23": [],
+        "24": [],
+        "25": []
+      }
+    },
+    "part_2": {
+      "total_marks": 100,
+      "lect_ans": "public/notes_papers/20-25sy/sem5/IT5206/PP/IT5206_2023_Ans.pdf",
+      "paper": "public/notes_papers/20-25sy/sem5/IT5206/PP/IT5206_2023.pdf"
+    }
+  },
+  "2024": {
+    "time": "2H",
+    "part_1": {
+      "total_marks": 50,
+      "comments": "Answer key pending; add verified choices for the numbered questions.",
+      "answerType": "multi",
+      "qcount": 25,
+      "questions": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": [],
+        "12": [],
+        "13": [],
+        "14": [],
+        "15": [],
+        "16": [],
+        "17": [],
+        "18": [],
+        "19": [],
+        "20": [],
+        "21": [],
+        "22": [],
+        "23": [],
+        "24": [],
+        "25": []
+      }
+    },
+    "part_2": {
+      "total_marks": 100,
+      "paper": "public/notes_papers/20-25sy/sem5/IT5206/PP/IT5206_2024.pdf"
+    }
+  }
 }

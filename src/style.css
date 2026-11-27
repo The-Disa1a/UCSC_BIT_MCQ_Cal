@@ -27,6 +27,90 @@
   width: 100%;
 }
 
+.mcq-paper-active {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 8px minmax(320px, 0.8fr);
+  align-items: start;
+  gap: 12px;
+}
+
+#mcq-question-panel {
+  grid-column: 1;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.mcq-paper-panel {
+  grid-column: 3;
+  width: 100%;
+  overflow: hidden;
+}
+
+.mcq-paper-frame {
+  display: block;
+  width: 100%;
+  height: min(78vh, 920px);
+  min-height: 420px;
+  border: 0;
+  background: #e5e7eb;
+}
+
+.mcq-paper-resize {
+  grid-column: 2;
+  align-self: stretch;
+  min-height: 420px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.mcq-paper-resize::after {
+  display: block;
+  width: 4px;
+  height: 100%;
+  min-height: 200px;
+  margin: auto;
+  border-radius: 4px;
+  background: #d1d5db;
+  content: "";
+}
+
+.mcq-paper-resize:hover::after {
+  background: #6366f1;
+}
+
+.mcq-paper-active #action-container {
+  grid-column: 1;
+  position: static;
+  width: 100%;
+  max-width: none;
+}
+
+@container (max-width: 720px) {
+  #questions-container {
+    columns: 2;
+  }
+}
+
+@container (max-width: 480px) {
+  #questions-container {
+    columns: 1;
+  }
+}
+
+.mcq-paper-left #mcq-question-panel {
+  grid-column: 3;
+}
+
+.mcq-paper-left .mcq-paper-panel {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.mcq-paper-left .mcq-paper-resize {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .essay-paper-panel {
   grid-column: 1;
   width: min(100%, 70vw);
@@ -231,18 +315,68 @@
   grid-template-columns: minmax(0, 8fr) 8px minmax(220px, 2fr);
 }
 
+.essay-layout.essay-results-visible {
+  grid-template-columns: minmax(0, 8fr) 8px minmax(220px, 2fr);
+}
+
 .essay-layout.essay-developer-mode .essay-paper-panel {
   width: auto;
   margin-inline: 0;
 }
 
-.essay-layout.essay-developer-mode .essay-viewer-resize {
+.essay-layout.essay-results-visible .essay-paper-panel {
+  width: auto;
+  margin-inline: 0;
+}
+
+.essay-layout.essay-developer-mode .essay-viewer-resize,
+.essay-layout.essay-results-visible .essay-viewer-resize {
   display: block;
+}
+
+.essay-layout.essay-results-visible #essay-tools-panel {
+  grid-column: 3;
+  position: static;
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  .mcq-paper-active {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .mcq-paper-active #mcq-question-panel,
+  .mcq-paper-panel,
+  .mcq-paper-active #action-container {
+    width: 100%;
+  }
+
+  .mcq-paper-active #action-container {
+    max-width: none;
+    order: 2;
+  }
+
+  .mcq-paper-active .mcq-paper-panel {
+    order: 3;
+  }
+
+  .mcq-paper-frame {
+    height: 68vh;
+    min-height: 320px;
+  }
+
+  .mcq-paper-resize {
+    display: none !important;
+  }
 }
 
 @media (max-width: 767px) {
   .essay-layout,
-  .essay-layout.essay-developer-mode {
+  .essay-layout.essay-developer-mode,
+  .essay-layout.essay-results-visible {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
@@ -261,6 +395,10 @@
     position: static;
   }
 
+  .essay-layout.essay-results-visible #essay-tools-panel {
+    grid-column: 1;
+  }
+
   #essay-viewer-resize {
     display: none;
   }
@@ -274,6 +412,17 @@
     min-height: 320px;
     padding: 10px;
   }
+}
+
+html {
+  overflow-x: clip;
+  scroll-snap-type: y proximity;
+}
+
+#layout-wrapper,
+#essay-workspace {
+  scroll-margin-top: 1rem;
+  scroll-snap-align: start;
 }
 
 html[data-theme="dark"] body {

@@ -1,13 +1,45 @@
 {
-    "2020": { #year of the exam
-        "total_marks": 100, #any number , defualt is 100
-        "comments" : "", #notes in the papers. 
-        "time" : "2H", #options 1H | 2H | ...
-        "answerType": "multi", #options single | multi
-        "qcount": 40, #options 20 | 25 | 40 | ....
-        "questions": {
-            "1": ["b"],...
-            "40": ["a", "c", "d", "e"]
-        }
-    }
+  "2025": {
+    "time": "2H",
+    "part_1": {
+      "total_marks": 50,
+      "comments": "",
+      "answerType": "multi",
+      "qcount": 25,
+      "paper": "public/notes_papers/20-25sy/sem3/COURSE/PP/2025_P1.pdf",
+      "questions": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": [],
+        "12": [],
+        "13": [],
+        "14": [],
+        "15": [],
+        "16": [],
+        "17": [],
+        "18": [],
+        "19": [],
+        "20": [],
+        "21": [],
+        "22": [],
+        "23": [],
+        "24": [],
+        "25": []
+      }
+    },
+    "part_2": {
+      "total_marks": 100,
+      "paper": "public/notes_papers/20-25sy/sem3/COURSE/PP/2025_P2.pdf",
+      "lect_ans": "public/notes_papers/20-25sy/sem3/COURSE/PP/2025_P2_Ans.pdf"
+    },
+    "notes": ["public/notes_papers/20-25sy/sem3/COURSE/note.pdf","public/notes_papers/20-25sy/sem3/COURSE/syllabus.pdf"]
+  }
 }
